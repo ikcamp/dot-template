@@ -1,0 +1,136 @@
+{
+  "name": "dot-template",
+  "displayName": "Dot Template",
+  "description": "create new files according to pre-defined templates",
+  "version": "0.0.1",
+  "publisher": "qiu8310",
+  "engines": {
+    "vscode": "^1.9.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:dtpl",
+    "onCommand:extension.createScriptFile",
+    "onCommand:extension.createStyleFile"
+  ],
+  "main": "./out/extension",
+  "contributes": {
+    "configuration": {
+      "title": "dot-template",
+      "properties": {
+        "dot-template.templatePathSeparator": {
+          "type": "string",
+          "default": ":",
+          "description": "path separator in template file name"
+        },
+        "dot-template.templateExtension": {
+          "type": "string",
+          "default": ".dtpl",
+          "description": "template file's extension"
+        },
+        "dot-template.templateDirectory": {
+          "type": "string",
+          "default": ".dtpl",
+          "description": "template directory which contains template files"
+        },
+        "dot-template.templateMinimatchOptions": {
+          "type": "object",
+          "default": {
+            "matchBase": true,
+            "nocomment": true,
+            "dot": true
+          },
+          "description": "minimatch options used in template name match, ref: https://github.com/isaacs/minimatch#options"
+        },
+        "dot-template.globalTemplateVariableFiles": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "js files or ts(install `ts-node` first) files that generate custom template variables"
+        },
+        "dot-template.localTemplateVariableFileName": {
+          "type": "string",
+          "default": "local",
+          "description": "local template variable file name without extension and path, support json, js and ts format"
+        },
+        "dot-template.importStyleTemplate": {
+          "type": "string",
+          "default": "import './style/$rawModuleName.scss'",
+          "description": "style file import format, used for create local style file and add reference to current file"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "extension.createScriptFile",
+        "title": "Create Script File"
+      },
+      {
+        "command": "extension.createStyleFile",
+        "title": "Create Style File"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.createScriptFile",
+        "key": "ctrl+k ctrl+p",
+        "mac": "cmd+k cmd+p"
+      },
+      {
+        "command": "extension.createStyleFile",
+        "key": "ctrl+k ctrl+s",
+        "mac": "cmd+k cmd+s"
+      }
+    ],
+    "languages": [
+      {
+        "id": "dtpl",
+        "aliases": [
+          "Dot Template",
+          "dtpl"
+        ],
+        "extensions": [
+          ".dtpl"
+        ],
+        "configuration": "./res/language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "dtpl",
+        "scopeName": "source.dtpl",
+        "path": "./res/syntaxes/dtpl.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "npm run build && node ./node_modules/vscode/bin/test"
+  },
+  "config": {
+    "hooks": {
+      "commit-msg": true,
+      "post-merge": true
+    }
+  },
+  "devDependencies": {
+    "@types/fs-extra": "~4.0.2",
+    "@types/mocha": "^2.2.42",
+    "@types/node": "^7.0.43",
+    "typescript": "^2.5.3",
+    "vscode": "^1.1.5"
+  },
+  "dependencies": {
+    "fs-extra": "~4.0.2",
+    "minimatch": "~3.0.4",
+    "mora-scripts": "~1.6.8",
+    "naming-transform": "~0.1.0"
+  }
+}
