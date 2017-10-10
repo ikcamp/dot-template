@@ -10,6 +10,10 @@
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qiu8310/dot-template"
+  },
   "activationEvents": [
     "onLanguage:dtpl",
     "onCommand:extension.createScriptFile",
