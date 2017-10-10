@@ -1,0 +1,22 @@
+/**
+ * Create by $user at $datetime
+ * All right reserved
+ */
+
+/**
+ * Create by $user at $datetime
+ * All right reserved
+ */
+
+import {React, PageComponent, Page, inject} from '../base'
+
+@inject('app')
+export class $ModuleName extends PageComponent<any, any> {
+  render() {
+    return (
+      <Page name='${ModuleName}' title=''>
+
+      </Page>
+    )
+  }
+}

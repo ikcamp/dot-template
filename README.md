@@ -57,6 +57,13 @@ If you have any requirements or dependencies, add a section describing those and
 
 * `dot-template.importStyleTemplate`: 导入的样式文件模板（按 `cmd+k cmd+p`时生成的内容），默认值 `import './style/$rawModuleName.scss'`
 
+## Template Grammars
+
+1. 模板变量需要以 `$` 开头，如 `$user`, `$date`；
+2. 如果变量需要和其它单词组合，或需要使用 `.` 语法时，则需要使用 `${...}` 形式，如：`${user}'s apple`, `${pkg.name}`
+
+模板示例请参考 [res/dtpl-examples](./res/dtpl-examples) 文件夹
+
 <!--
 ## Known Issues
 

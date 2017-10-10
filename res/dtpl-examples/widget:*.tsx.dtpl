@@ -1,0 +1,22 @@
+/**
+ * Create by $user at $datetime
+ * All right reserved
+ */
+
+import * as React from 'react'
+import {classSet} from 'mora-common/util/classSet'
+
+export interface I${ModuleName}Props {
+  className?: string
+  style?: React.CSSProperties
+}
+
+export class $ModuleName extends React.PureComponent<I${ModuleName}Props, any> {
+  render() {
+    let {className, style} = this.props
+    return (
+      <div className={classSet('w${ModuleName}', className)} style={style}>
+      </div>
+    )
+  }
+}
