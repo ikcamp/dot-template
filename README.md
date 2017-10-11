@@ -122,9 +122,3 @@ Calling out known issues can help limit users opening duplicate issues against y
 ## 待办事项
 
 * [ ] 支持其它 render，如 ejs
-
-## Release Notes
-
-### 0.0.1
-
-Initial release
