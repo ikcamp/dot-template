@@ -66,7 +66,9 @@
 
         - 模板支持自定义变量
             * 可以通过 `dot-template.globalTemplateVariableFiles` 配置来指定提供全局变量的文件
-            * 也可以在模板文件所在的文件夹中添加一个 local.js 文件来提供局部变量给当前文件夹下的所有模板使用
+            * 也可以在模板文件所在的文件夹中添加一个 `local.js` 文件来提供局部变量给当前文件夹下的所有模板使用
+            * 自定义变量的文件的写法可以参考 [res/.dtpl/local.js](res/.dtpl/local.js) （全局或局部的文件写法都一样）
+            * 另外也可以使用 ts 文件，但需要项目中安装了 `ts-node` 模块
 
         *模板示例可以参考 [res/.dtpl](./res/.dtpl) 文件夹*
 
@@ -78,6 +80,7 @@
 
 
 > **总结**
+>
 > 使用 `dot-template` 只需记住快捷键 `cmd+k cmd+p` (win: `ctrl+k ctrl+p`) 即可，剩下的就是管理模板文件了
 
 **附加功能**
