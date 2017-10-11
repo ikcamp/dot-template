@@ -25,6 +25,7 @@
     "onCommand:extension.createStyleFile"
   ],
   "main": "./out/extension",
+  "icon": "res/images/icon.png",
   "contributes": {
     "configuration": {
       "title": "dot-template",
