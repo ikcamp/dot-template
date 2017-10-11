@@ -1,9 +1,12 @@
+//#region
 import * as vscode from 'vscode'
 import * as path from 'path'
 import * as fs from 'fs-extra'
 import {camel, cap, upper, snake/*, kebab */} from 'naming-transform'
 import * as DotProp from 'mora-scripts/libs/lang/DotProp'
 import {config} from './config'
+import defaultEnv from './defaultEnv'
+//#endregion
 
 const {workspace, window} = vscode
 const TPL_VARABLE_REGEXP = /\$([a-zA-Z][\-\w]*)|\$\{([a-zA-Z][\-\w\.]*)\}/g
@@ -19,16 +22,15 @@ export interface IEnvData {
   datetime: string
   user: string
   pkg: any
-
-  fileName?: string
-  dirName?: string
-  extension?: string
-  baseName?: string
-  rawModuleName?: string
-  moduleName?: string
-  ModuleName?: string
-  MODULE_NAME?: string
-  module_name?: string
+  fileName: string
+  dirName: string
+  extension: string
+  baseName: string
+  rawModuleName: string
+  moduleName: string
+  ModuleName: string
+  MODULE_NAME: string
+  module_name: string
 }
 
 export function getEnvData(fileName: string): IEnvData {
@@ -40,6 +42,10 @@ export function getEnvData(fileName: string): IEnvData {
   let pkg = {}
   try { pkg = require(path.join(rootPath, 'package.json')) } catch (e) { }
 
+  let dirName = path.dirname(fileName)
+  let extension = path.extname(fileName)
+  let baseName = path.basename(fileName, extension)
+
   let data: IEnvData = {
     rootPath,
     npmPath: path.join(rootPath, 'node_modules'),
@@ -48,30 +54,17 @@ export function getEnvData(fileName: string): IEnvData {
     datetime: date + ' ' + time,
     user: process.env.USER,
     pkg,
+
+    fileName,
+    dirName,
+    extension,
+    baseName,
+    rawModuleName: baseName,
+    moduleName: camel(baseName),
+    ModuleName: cap(baseName),
+    MODULE_NAME: upper(baseName),
+    module_name: snake(baseName),
   }
-
-  if (window.activeTextEditor) {
-    const {fileName} = window.activeTextEditor.document
-    let dirName = path.dirname(fileName)
-    let extension = path.extname(fileName)
-    let baseName = path.basename(fileName, extension)
-
-    data = {
-      ...data,
-
-      fileName,
-      dirName,
-      extension,
-      baseName,
-      rawModuleName: baseName,
-      moduleName: camel(baseName),
-      ModuleName: cap(baseName),
-      MODULE_NAME: upper(baseName),
-      module_name: snake(baseName),
-      // 'module-name': kebab(baseName) // module-name 不能当变量名
-    }
-  }
-
   return {...data, ..._getGlobalCustomEnvData(data)}
 }
 
@@ -85,6 +78,25 @@ export function getLocalCustomEnvData(folder: string): any {
     .find(f => fs.existsSync(f))
 
   return localFile ? _getCustomEnvDataFromFile(localFile) : {}
+}
+
+export function getDtplFileEnvData(dtplFile: string) {
+  let envData = getEnvData(path.join(path.dirname(dtplFile), 'hello-world.js'))
+  return {...envData, ...getLocalCustomEnvData(envData.dirName)} // envData.dirName 即为模板目录
+}
+
+export function getDtplFileVariableDocument(key: string, envData: IEnvData): string {
+  let explain = defaultEnv[key] || ''
+  let example = ''
+  if (key.indexOf('.') > 0) {
+    example = DotProp.get(envData, key)
+  } else {
+    example = envData[key]
+  }
+
+  example = example ? `示例:  ${JSON.stringify(example)}` : ''
+
+  return explain + (example && explain ? ', ' : '') + example
 }
 
 export function render(tpl: string, data: any): string {

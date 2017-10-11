@@ -107,11 +107,11 @@ If you have any requirements or dependencies, add a section describing those and
 
 * `dot-template.templateMinimatchOptions`: [minimatch 的选项](https://github.com/isaacs/minimatch#options)，用于匹配模板名称，默认值 `{"matchBase": true,"nocomment": true,"dot": true}`
 
-* `dot-template.globalTemplateVariableFiles`: 全局的自定义环境变量文件，支持 json, js, 和 ts 文件，需要使用绝对路径，路径名称中支持变量 `${npmPath}` 和 `${rootPath}`，默认值 `[]`
+* `dot-template.globalTemplateVariableFiles`: 全局的自定义环境变量文件，支持 json, js, 和 ts 文件，需要使用绝对路径，路径名称中支持变量 `${npmPath}` 和 `${rootPath}` 等默认的环境变量，默认值 `[]`
 
 * `dot-template.localTemplateVariableFileName`: 模板文件目录下的自定义环境变量的文件的名称，不包含路径，不包含后缀名，会自动检查带 `.json`, `.js`, `.ts` 后缀的文件是否存在，存在的话就使用它，默认值 `local`
 
-* `dot-template.importStyleTemplate`: 导入的样式文件模板（按 `cmd+k cmd+p`时生成的内容），默认值 `import './style/$rawModuleName.scss'`，路径中支持使用默认的环境变量
+* `dot-template.importStyleTemplate`: 导入的样式文件模板（按 `cmd+k cmd+p`时生成的内容），默认值 `import './style/$rawModuleName.scss'`，路径中支持使用默认的环境变量和全局的环境变量
 
 <!--
 ## Known Issues

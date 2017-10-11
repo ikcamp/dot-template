@@ -5,8 +5,8 @@ import * as os from 'os'
 import * as minimatch from 'minimatch'
 import * as findup from 'mora-scripts/libs/fs/findup'
 import * as escapeRegExp from 'mora-scripts/libs/lang/escapeRegExp'
-import {getEnvData,  getLocalCustomEnvData, render, rootPath, IEnvData} from './helper'
-import {config} from './config'
+import {getEnvData,  getLocalCustomEnvData, render, rootPath, IEnvData} from './inc/helper'
+import {config} from './inc/config'
 
 const {window, workspace} = vscode
 
