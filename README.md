@@ -11,7 +11,7 @@
 * dtpl 模板文件支持环境变量自动补全
 
 
-![创建新文件的演示图](http://lcdn.static.lotlot.com/createFile-1d1eb080.jpg)
+![创建新文件的演示图](https://n1image.hjfile.cn/res7/2017/10/11/1738a1284e501e5d6fdb0ccacd081c7f.jpg)
 
 ## 背景
 
@@ -87,7 +87,7 @@
 
 如果当前编辑的是 js 或 ts 文件，可以通过快捷键 `cmd+k cmd+s` 来快速注入样式文件的引用，并创建一个样式文件（如果存在则不会创建）；要修改注入的内容，可以修改配置选项 `dot-template.importStyleTemplate`
 
-![创建样式文件的演示图](http://lcdn.static.lotlot.com/createStyle-765f6bd2.jpg)
+![创建样式文件的演示图](https://n1image.hjfile.cn/res7/2017/10/11/622e53aeb073b19b0eed1807db99a293.jpg)
 
 <!--
 ## Requirements
