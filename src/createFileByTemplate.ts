@@ -134,7 +134,7 @@ function getTemplate(fileName: string, envData?: IEnvData): string {
 }
 
 function getTemplateFromDir(fileName: string, tplDir: string, envData: IEnvData): false | string {
-  console.log('search dtpl directory in %j', tplDir)
+  // console.log('search dtpl directory in', tplDir)
 
   const tplExtension = config.templateExtension
   const tplPathSep = config.templatePathSeparator
@@ -166,7 +166,7 @@ function getTemplateFromDir(fileName: string, tplDir: string, envData: IEnvData)
   patternTplNames.sort((a, b) => sortMap[b] - sortMap[a])
   const foundTpl = patternTplNames.find(t => minimatch(fileName, t, minimatchOpts))
   if (foundTpl) {
-    console.log('found dtpl %j', foundTpl)
+    // console.log('found dtpl', foundTpl)
     const content = fs.readFileSync(path.join(tplDir, tplNameMap[foundTpl])).toString()
     return content.trim() ? render(content, {...envData, ...getLocalCustomEnvData(tplDir)}) : content
   } else {
