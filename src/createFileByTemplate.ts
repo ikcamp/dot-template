@@ -5,29 +5,28 @@ import * as os from 'os'
 import * as minimatch from 'minimatch'
 import * as findup from 'mora-scripts/libs/fs/findup'
 import * as escapeRegExp from 'mora-scripts/libs/lang/escapeRegExp'
-import {getEnvData, getLocalCustomEnvData, render, IEnvData} from './helper'
+import {getEnvData,  getLocalCustomEnvData, render, rootPath, IEnvData} from './helper'
 import {config} from './config'
 
 const {window, workspace} = vscode
 
 export function createScriptFile() {
-  if (isRunnable()) {
-    const envData = getEnvData()
-    const {dirName, extension} = envData
+  const editor = window.activeTextEditor
+  let created
 
-    let editor = window.activeTextEditor
+  let createFile = (filepath: string) => {
+    created = true
+    fs.ensureFileSync(filepath)
+    openFile(filepath, () => insertSnippet(getTemplate(filepath)))
+  }
+
+  if (editor) {
+    let fileName = editor.document.fileName
+    let dirName = path.dirname(fileName)
     let content = editor.document.getText()
 
-    if (content) {
+    if (content.trim()) {
       let {start, end} = editor.selection
-      let created
-      let createFile = (filepath) => {
-        created = true
-
-        let newFile = path.resolve(dirName, filepath)
-        fs.ensureFileSync(newFile)
-        openFile(newFile, () => insertSnippet(getTemplate(newFile, envData)))
-      }
 
       // 当前光标所在的行上引用了一个不存在的文件
       for (let lineNumber = start.line; lineNumber <= end.line; lineNumber++) {
@@ -35,11 +34,12 @@ export function createScriptFile() {
         // 识别『 import Test from './Test' 』 和  『 const Test = require('./Test') 』
         if ( /^\s*import\s+.*?\s+from\s+'([^\)]+)'/.test(lineText) || /require\('([^\)]+)'\)/.test(lineText)) {
           let filepath = RegExp.$1
+          let absFilepath = path.resolve(dirName, filepath)
+          if (!(/\.\w+$/.test(absFilepath))) absFilepath += path.extname(fileName)
 
           // 必须是相对路径，并且文件不存在
-          if (filepath[0] === '.' && !fs.existsSync(path.resolve(dirName, filepath))) {
-            if (!(/\.\w+$/.test(filepath))) filepath += extension
-            createFile(filepath)
+          if (filepath[0] === '.' && !fs.existsSync(absFilepath)) {
+            createFile(absFilepath)
             break
           }
         }
@@ -47,68 +47,70 @@ export function createScriptFile() {
 
       // 没有找到一个可以创建的文件，则提示用户输入文件路径
       if (!created) {
-        window.showInputBox({placeHolder: '请输入要创建的文件名（相对当前文件的路径，无输入则在当前文件创建）'}).then(createFile)
+        window.showInputBox({placeHolder: '请输入要创建的文件名（相对当前文件的路径）'}).then(f => f && createFile(path.resolve(dirName, f)))
       }
-    } else if (editor.document.fileName) {
-      insertSnippet(getTemplate(editor.document.fileName, envData))
+    } else {
+      insertSnippet(getTemplate(editor.document.fileName))
     }
+  } else {
+    window.showInputBox({placeHolder: '请输入要创建的文件名（相对于根目录）'}).then(f => f && createFile(path.resolve(rootPath, f)))
   }
 }
 
 export function createStyleFile() {
-  if (isRunnable()) {
-    const envData = getEnvData()
-    const {dirName} = envData
-    const importStyleTemplate = config.importStyleTemplate
-    const importStyle = render(importStyleTemplate, envData)
+  let editor = window.activeTextEditor
+  if (!editor) return
 
-    const stylePathReg = /(['"])(.*?)\1/
-    if (!stylePathReg.test(importStyle)) {
-      return window.showErrorMessage('Can\'ot find style template in config `importStyleTemplate=' + JSON.stringify(importStyleTemplate) + '`')
-    }
-    let stylePath = RegExp.$2
-    let styleFile = path.resolve(dirName, stylePath)
-    fs.ensureFileSync(styleFile)
+  const envData = getEnvData(editor.document.fileName)
+  const {dirName} = envData
+  const importStyleTemplate = config.importStyleTemplate
+  const importStyle = render(importStyleTemplate, envData)
 
-    let editor = window.activeTextEditor
-
-    let isStyleRefExists = false
-    let lastImportLineNumber = -1 // 文件中使用 import 的最后一行
-
-    eachDocumentLine(editor.document, (line, lineNumber) => {
-      let {text} = line
-      if (text.indexOf(stylePath) >= 0) {
-        isStyleRefExists = true
-
-      if (/^(\s*\/\/\s*)/.test(text)) {
-          editor.edit(eb => {
-            let startPos = new vscode.Position(lineNumber, 0)
-            let endPos = new vscode.Position(lineNumber, RegExp.$1.length)
-            eb.replace(new vscode.Range(startPos, endPos), '')
-          })
-        }
-      }
-
-      if (/^(import|(var|let|const)\s+\w+\s+=\s+require)\b/.test(text)) lastImportLineNumber = lineNumber
-
-      return !isStyleRefExists // 找到了就不用再找了
-    })
-
-    // 文件中没有引用样式引用的话，就手动添加引用
-    if (!isStyleRefExists) {
-      editor.edit(eb => eb.insert(new vscode.Position(lastImportLineNumber + 1, 0), `${os.EOL}${importStyle}${os.EOL}`))
-    }
-
-    openFile(styleFile, (doc, trimContent) => {
-      if (!trimContent) {
-        insertSnippet(getTemplate(styleFile, envData))
-      }
-    })
+  const stylePathReg = /(['"])(.*?)\1/
+  if (!stylePathReg.test(importStyle)) {
+    return window.showErrorMessage('Can\'ot find style template in config `importStyleTemplate=' + JSON.stringify(importStyleTemplate) + '`')
   }
+  let stylePath = RegExp.$2
+  let styleFile = path.resolve(dirName, stylePath)
+  fs.ensureFileSync(styleFile)
+
+  let isStyleRefExists = false
+  let lastImportLineNumber = -1 // 文件中使用 import 的最后一行
+
+  eachDocumentLine(editor.document, (line, lineNumber) => {
+    let {text} = line
+    if (text.indexOf(stylePath) >= 0) {
+      isStyleRefExists = true
+
+    if (/^(\s*\/\/\s*)/.test(text)) {
+        editor.edit(eb => {
+          let startPos = new vscode.Position(lineNumber, 0)
+          let endPos = new vscode.Position(lineNumber, RegExp.$1.length)
+          eb.replace(new vscode.Range(startPos, endPos), '')
+        })
+      }
+    }
+
+    if (/^(import|(var|let|const)\s+\w+\s+=\s+require)\b/.test(text)) lastImportLineNumber = lineNumber
+
+    return !isStyleRefExists // 找到了就不用再找了
+  })
+
+  // 文件中没有引用样式引用的话，就手动添加引用
+  if (!isStyleRefExists) {
+    editor.edit(eb => eb.insert(new vscode.Position(lastImportLineNumber + 1, 0), `${os.EOL}${importStyle}${os.EOL}`))
+  }
+
+  openFile(styleFile, (doc, trimContent) => {
+    if (!trimContent) {
+      insertSnippet(getTemplate(styleFile, envData)) // 样式是附属文件，使用主文件的 envData
+    }
+  })
 }
 
-function getTemplate(fileName: string, envData: IEnvData): string {
+function getTemplate(fileName: string, envData?: IEnvData): string {
   let tplDir = config.templateDirectory
+  envData = envData || getEnvData(fileName)
 
   try {
     let findFromDir = path.dirname(fileName)
@@ -132,6 +134,8 @@ function getTemplate(fileName: string, envData: IEnvData): string {
 }
 
 function getTemplateFromDir(fileName: string, tplDir: string, envData: IEnvData): false | string {
+  console.log('search dtpl directory in %j', tplDir)
+
   const tplExtension = config.templateExtension
   const tplPathSep = config.templatePathSeparator
   const minimatchOpts = config.templateMinimatchOptions
@@ -154,13 +158,15 @@ function getTemplateFromDir(fileName: string, tplDir: string, envData: IEnvData)
   // 排序：路径多的优先匹配
   const pathReg = /[\/\\]/g
   const sortMap = patternTplNames.reduce((map, name) => {
-    map[name] = (name.match(pathReg) || []).length
+    let m = name.match(pathReg)
+    // 路径越长，优先级越高；路径一样，名字越长，优先级越高
+    map[name] = (m ? m.length * 100 : 0) + name.length
     return map
   }, {})
   patternTplNames.sort((a, b) => sortMap[b] - sortMap[a])
-
   const foundTpl = patternTplNames.find(t => minimatch(fileName, t, minimatchOpts))
   if (foundTpl) {
+    console.log('found dtpl %j', foundTpl)
     const content = fs.readFileSync(path.join(tplDir, tplNameMap[foundTpl])).toString()
     return content.trim() ? render(content, {...envData, ...getLocalCustomEnvData(tplDir)}) : content
   } else {
@@ -183,21 +189,21 @@ function eachDocumentLine(doc: vscode.TextDocument, fn: (line: vscode.TextLine, 
   }
 }
 
-function isRunnable() {
-  let editor = window.activeTextEditor
-  if (!editor) {
-    window.showErrorMessage('dot-template: no active text editor!')
-    return false
-  }
+// function isRunnable() {
+//   let editor = window.activeTextEditor
+//   if (!editor) {
+//     window.showErrorMessage('dot-template: no active text editor!')
+//     return false
+//   }
 
-  // let langId = editor.document.languageId;
-  // if (langId !== 'typescriptreact' && langId != 'javascriptreact') {
-  //   window.showErrorMessage('dot-template: not react language!')
-  //   return false
-  // }
+//   let langId = editor.document.languageId;
+//   if (langId !== 'typescriptreact' && langId != 'javascriptreact') {
+//     window.showErrorMessage('dot-template: not react language!')
+//     return false
+//   }
 
-  return true
-}
+//   return true
+// }
 
 function insertSnippet(content: string, pos?: vscode.Position) {
   window.activeTextEditor.insertSnippet(new vscode.SnippetString(content), pos)

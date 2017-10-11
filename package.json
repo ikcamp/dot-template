@@ -10,6 +10,11 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "template",
+    "file",
+    "variable"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/qiu8310/dot-template"

@@ -31,7 +31,7 @@ export interface IEnvData {
   module_name?: string
 }
 
-export function getEnvData(fileName?: string): IEnvData {
+export function getEnvData(fileName: string): IEnvData {
   let d = new Date()
   let pad = n => n < 10 ? '0' + n : n
   let date = [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(pad).join('-')
@@ -50,7 +50,7 @@ export function getEnvData(fileName?: string): IEnvData {
     pkg,
   }
 
-  if (window.activeTextEditor && window.activeTextEditor.document.fileName) {
+  if (window.activeTextEditor) {
     const {fileName} = window.activeTextEditor.document
     let dirName = path.dirname(fileName)
     let extension = path.extname(fileName)

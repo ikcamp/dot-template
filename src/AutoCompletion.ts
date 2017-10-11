@@ -12,7 +12,7 @@ export class AutoCompletion implements CompletionItemProvider {
     const matches = variableRegexp.test(text)
     if (!matches) return []
 
-    let envData = getEnvData()
+    let envData = getEnvData(document.fileName)
     envData = {...envData, ...getLocalCustomEnvData(envData.dirName)}
 
     let prefix = matches[1]
