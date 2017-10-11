@@ -5,14 +5,13 @@
 ## 特色
 
 * 不区分项目语言，也就是说任何语言都可以使用此插件
-* 一个快捷键 (win: `ctrl+k ctrl+p` mac: `cmd+k cmd+p`) 快速匹配模板并生成新文件内容
+* 只用一个快捷键 (win: `ctrl+k ctrl+p` mac: `cmd+k cmd+p`) ，便可以快速匹配模板并生成新文件内容
 * 对于 js 或者 ts 文件，支持自动创建同名的样式文件，并插入样式文件的引用
 * dtpl 模板文件支持变量高亮
 * dtpl 模板文件支持环境变量自动补全
 
 
-
-![create-file](http://lcdn.static.lotlot.com/createFile-1d1eb080.jpg)
+![创建新文件的演示图](http://lcdn.static.lotlot.com/createFile-1d1eb080.jpg)
 
 ## 背景
 
@@ -85,7 +84,7 @@
 
 如果当前编辑的是 js 或 ts 文件，可以通过快捷键 `cmd+k cmd+s` 来快速注入样式文件的引用，并创建一个样式文件（如果存在则不会创建）；要修改注入的内容，可以修改配置选项 `dot-template.importStyleTemplate`
 
-![create-style](http://lcdn.static.lotlot.com/createStyle-765f6bd2.jpg)
+![创建样式文件的演示图](http://lcdn.static.lotlot.com/createStyle-765f6bd2.jpg)
 
 <!--
 ## Requirements
