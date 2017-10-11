@@ -2,7 +2,7 @@
   "name": "dot-template",
   "displayName": "Dot Template",
   "description": "create new files according to pre-defined templates",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "qiu8310",
   "engines": {
     "vscode": "^1.9.0"
