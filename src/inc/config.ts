@@ -26,7 +26,13 @@ export const config = {
   get localTemplateVariableFileName(): string {
     return c.get('localTemplateVariableFileName')
   },
-  /** style file import format, used for create local style file and add reference to current file */
+
+  /** 根据当前文件，创建一个与之相关的文件时的文件路径（按 `cmd+k cmd+r`时生成的文件） */
+  get referenceFilePath(): string {
+    return c.get('referenceFilePath')
+  },
+
+  /** 导入的样式文件模板（按 `cmd+k cmd+s`时生成的内容），路径中支持使用默认的环境变量和全局的环境变量 */
   get importStyleTemplate(): string {
     return c.get('importStyleTemplate')
   }

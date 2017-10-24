@@ -32,7 +32,7 @@ export function createScriptFile() {
       for (let lineNumber = start.line; lineNumber <= end.line; lineNumber++) {
         let lineText = editor.document.lineAt(lineNumber).text
         // 识别『 import Test from './Test' 』 和  『 const Test = require('./Test') 』
-        if ( /^\s*import\s+.*?\s+from\s+'([^\)]+)'/.test(lineText) || /require\('([^\)]+)'\)/.test(lineText)) {
+        if (/^\s*(?:import|export)\s+.*?\s+from\s+'([^\)]+)'/.test(lineText) || /require\('([^\)]+)'\)/.test(lineText)) {
           let filepath = RegExp.$1
           let absFilepath = path.resolve(dirName, filepath)
           if (!(/\.\w+$/.test(absFilepath))) absFilepath += path.extname(fileName)
@@ -107,6 +107,24 @@ export function createStyleFile() {
     }
   })
 }
+
+export function createReferenceFile() {
+  let editor = window.activeTextEditor
+  let rawRefPath = config.referenceFilePath
+  if (!editor || !rawRefPath) return
+
+  const envData = getEnvData(editor.document.fileName)
+  const refPath = render(rawRefPath, envData)
+  const refFile = path.resolve(envData.dirName, refPath)
+  fs.ensureFileSync(refFile)
+
+  openFile(refFile, (doc, trimContent) => {
+    if (!trimContent) {
+      insertSnippet(getTemplate(refFile, envData)) // 样式是附属文件，使用主文件的 envData
+    }
+  })
+}
+
 
 function getTemplate(fileName: string, envData?: IEnvData): string {
   let tplDir = config.templateDirectory

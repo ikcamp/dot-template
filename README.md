@@ -85,9 +85,11 @@
 
 **附加功能**
 
-如果当前编辑的是 js 或 ts 文件，可以通过快捷键 `cmd+k cmd+s` 来快速注入样式文件的引用，并创建一个样式文件（如果存在则不会创建）；要修改注入的内容，可以修改配置选项 `dot-template.importStyleTemplate`
+1. 如果当前编辑的是 js 或 ts 文件，可以通过快捷键 `cmd+k cmd+s` 来快速注入样式文件的引用，并创建一个样式文件（如果存在则不会创建）；要修改注入的内容，可以修改配置选项 `dot-template.importStyleTemplate`
 
 ![创建样式文件的演示图](https://n1image.hjfile.cn/res7/2017/10/11/622e53aeb073b19b0eed1807db99a293.jpg)
+
+2. 使用快捷键 `cmd+k cmd+s` 可以快速生成一个配置项 `dot-template.referenceFilePath` 所对应的文件，并注入存在的模板
 
 <!--
 ## Requirements
@@ -112,6 +114,8 @@ If you have any requirements or dependencies, add a section describing those and
 * `dot-template.localTemplateVariableFileName`: 模板文件目录下的自定义环境变量的文件的名称，不包含路径，不包含后缀名，会自动检查带 `.json`, `.js`, `.ts` 后缀的文件是否存在，存在的话就使用它，默认值 `local`
 
 * `dot-template.importStyleTemplate`: 导入的样式文件模板（按 `cmd+k cmd+p`时生成的内容），默认值 `import './style/$rawModuleName.scss'`，路径中支持使用默认的环境变量和全局的环境变量
+
+* `dot-template.referenceFilePath`: 根据当前文件，创建一个与之相关的文件时的文件路径（按 `cmd+k cmd+r`时生成的文件）
 
 <!--
 ## Known Issues

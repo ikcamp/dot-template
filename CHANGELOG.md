@@ -1,3 +1,9 @@
+v0.0.5 / 2017-10-24
+===================
+
+- 添加 dot-template.referenceFilePath 配置
+- 添加 createReferenceFile 命令，可以快速生成一个新文件
+
 v0.0.4 / 2017-10-11
 ===================
 

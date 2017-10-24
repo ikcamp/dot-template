@@ -22,7 +22,8 @@
   "activationEvents": [
     "onLanguage:dtpl",
     "onCommand:extension.createScriptFile",
-    "onCommand:extension.createStyleFile"
+    "onCommand:extension.createStyleFile",
+    "onCommand:extension.createReferenceFile"
   ],
   "main": "./out/extension",
   "icon": "res/images/icon.png",
@@ -67,10 +68,15 @@
           "default": "local",
           "description": "模板文件目录下的自定义环境变量的文件的名称，不包含路径，不包含后缀名，会自动检查带 `.json`, `.js`, `.ts` 后缀的文件是否存在，存在的话就使用它"
         },
+        "dot-template.referenceFilePath": {
+          "type": "string",
+          "default": "./$rawModuleName.ref.$extension",
+          "description": "根据当前文件，创建一个与之相关的文件时的文件路径（按 `cmd+k cmd+r`时生成的文件）"
+        },
         "dot-template.importStyleTemplate": {
           "type": "string",
           "default": "import './style/$rawModuleName.scss'",
-          "description": "导入的样式文件模板（按 `cmd+k cmd+p`时生成的内容），路径中支持使用默认的环境变量和全局的环境变量"
+          "description": "导入的样式文件模板（按 `cmd+k cmd+s`时生成的内容），路径中支持使用默认的环境变量和全局的环境变量"
         }
       }
     },
@@ -82,6 +88,10 @@
       {
         "command": "extension.createStyleFile",
         "title": "Create Style File"
+      },
+      {
+        "command": "extension.createReferenceFile",
+        "title": "Create Reference File"
       }
     ],
     "keybindings": [
@@ -89,6 +99,11 @@
         "command": "extension.createScriptFile",
         "key": "ctrl+k ctrl+p",
         "mac": "cmd+k cmd+p"
+      },
+      {
+        "command": "extension.createReferenceFile",
+        "key": "ctrl+k ctrl+f",
+        "mac": "cmd+k cmd+f"
       },
       {
         "command": "extension.createStyleFile",
