@@ -1,5 +1,5 @@
 import {CompletionItemProvider, TextDocument, Position, CompletionItem, Range, CompletionItemKind} from 'vscode'
-import {getDtplFileEnvData, getDtplFileVariableDocument} from './inc/helper'
+import {TextFile} from './TextFile'
 import * as DotProp from 'mora-scripts/libs/lang/DotProp'
 
 const variableRegexp = /\$\{?([\-\w\.]*)$/
@@ -12,21 +12,22 @@ export class DtplAutoCompletion implements CompletionItemProvider {
     const matches = text.match(variableRegexp)
     if (!matches) return []
 
-    let envData = getDtplFileEnvData(document.fileName)
+    let data = new TextFile(document.fileName).getData()
 
     let prefix = matches[1]
     if (matches[0].indexOf('{') >= 0 && prefix.indexOf('.') > 0) {
       let parts = prefix.split('.')
-      prefix = parts.pop()
-      envData = DotProp.get(envData, parts.join('.'))
-      if (typeof envData !== 'object') return []
+      prefix = parts.pop() as string
+      data = DotProp.get(data, parts.join('.'))
+      if (typeof data !== 'object') return []
     }
 
-    return Object.keys(envData)
+    return Object.keys(data || {})
       .filter(k => !prefix || k.startsWith(prefix))
       .map(k => {
         let c = new CompletionItem(k, CompletionItemKind.Variable)
-        c.documentation = getDtplFileVariableDocument(k, envData)
+        // c.documentation = getDtplFileVariableDocument(k, data)
+        c.documentation = 'TODO: 添加文档'
         return c
       })
   }

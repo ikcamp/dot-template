@@ -20,6 +20,7 @@
     "url": "https://github.com/qiu8310/dot-template"
   },
   "activationEvents": [
+    "*",
     "onLanguage:dtpl",
     "onCommand:extension.createScriptFile",
     "onCommand:extension.createStyleFile",
@@ -53,7 +54,46 @@
             "nocomment": true,
             "dot": true
           },
-          "description": "minimatch 的选项，用于匹配模板名称, 参考：https://github.com/isaacs/minimatch#options"
+          "description": "minimatch 的选项，用于匹配模板名称, 参考：https://github.com/isaacs/minimatch#options",
+          "properties": {
+            "nobrace": {
+              "type": "boolean",
+              "description": "Do not expand {a,b} and {1..3} brace sets"
+            },
+            "noglobstar": {
+              "type": "boolean",
+              "description": "Disable ** matching against multiple folder names"
+            },
+            "dot": {
+              "type": "boolean",
+              "description": "Allow patterns to match filenames starting with a period, even if the pattern does not explicitly have a period in that spot"
+            },
+            "noext": {
+              "type": "boolean",
+              "description": "Disable 'extglob style patterns like +(a|b)"
+            },
+            "nocase": {
+              "type": "boolean",
+              "description": "Perform a case-insensitive match"
+            },
+            "matchBase": {
+              "type": "boolean",
+              "description": "If set, then patterns without slashes will be matched against the basename of the path if it contains slashes"
+            },
+            "nocomment": {
+              "type": "boolean",
+              "description": "Suppress the behavior of treating # at the start of a pattern as a comment"
+            },
+            "nonegate": {
+              "type": "boolean",
+              "description": "Suppress the behavior of treating a leading ! character as negation"
+            },
+            "flipNegate": {
+              "type": "boolean",
+              "description": "Returns from negate expressions the same as if they were not negated. (Ie, true on a hit, false on a miss.)"
+            }
+          }
+
         },
         "dot-template.globalTemplateVariableFiles": {
           "type": "array",
@@ -82,31 +122,22 @@
     },
     "commands": [
       {
-        "command": "extension.createScriptFile",
-        "title": "Create Script File"
+        "command": "extension.createTemplateFile",
+        "title": "dtpl: 创建文件并注入模板内容"
       },
       {
-        "command": "extension.createStyleFile",
-        "title": "Create Style File"
-      },
-      {
-        "command": "extension.createReferenceFile",
-        "title": "Create Reference File"
+        "command": "extension.createRelatedFile",
+        "title": "dtpl: 创建关联文件并注入模板内容"
       }
     ],
     "keybindings": [
       {
-        "command": "extension.createScriptFile",
+        "command": "extension.createTemplateFile",
         "key": "ctrl+k ctrl+p",
         "mac": "cmd+k cmd+p"
       },
       {
-        "command": "extension.createReferenceFile",
-        "key": "ctrl+k ctrl+f",
-        "mac": "cmd+k cmd+f"
-      },
-      {
-        "command": "extension.createStyleFile",
+        "command": "extension.createRelatedFile",
         "key": "ctrl+k ctrl+s",
         "mac": "cmd+k cmd+s"
       }
@@ -147,6 +178,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "~4.0.2",
+    "@types/minimatch": "~3.0.1",
     "@types/mocha": "^2.2.42",
     "@types/node": "^7.0.43",
     "typescript": "^2.5.3",
@@ -156,6 +188,7 @@
     "fs-extra": "~4.0.2",
     "minimatch": "~3.0.4",
     "mora-scripts": "~1.6.8",
-    "naming-transform": "~0.1.0"
+    "ts-node": "~3.3.0",
+    "tslib": "~1.8.0"
   }
 }

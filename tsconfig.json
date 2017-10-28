@@ -1,11 +1,23 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es2015",
+        "target": "es5",
         "outDir": "out",
         "noUnusedLocals": true,
+        "noImplicitAny": true,
+        "noUnusedParameters": false,
+        "noImplicitThis": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "experimentalDecorators": true,
+
+        "pretty": true,
+        "importHelpers": true,
+
         "lib": [
-            "es2015"
+            "es2016"
         ],
         "sourceMap": true,
         "rootDir": "src"
