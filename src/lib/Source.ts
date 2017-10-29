@@ -7,43 +7,44 @@ import * as _ from '../inc/'
 export interface IMatchedDtpl {
   /** 当前匹配到的 .dtpl 的目录 */
   folder: string
-  /** 当前匹配到的模板文件路径 */
+
+  /** 源文件相关的数据 */
+  src: _.ISource
+
+  /** 当前匹配到的模板文件或模板目录的绝对路径 */
   templatePath: string
-  /** .dtpl 的目录中的 config 文件返回的对象 */
+
+  /** .dtpl 的目录中的 dtpl.ts 或 dtpl.js 文件返回的对象 */
   config: _.IConfig
-  /** config 中配置的模板对象 */
+
+  /** 匹配到的用户定义的模板对象 */
   template: _.ITemplate
+
   /** 渲染模板用的数据 */
   data: _.IData
 }
 
-export class TextFile {
+export class Source {
   /**
-   * 文件的绝对路径，注意：此路径上可能并没有文件
+   * 文件的绝对路径
+   *
+   * 注意：此路径上可能并没有文件，也可能是一个文件夹
    */
-  filepath: string
+  filePath: string
+
   /**
    * 文件相对于项目根目录的路径，不带 "./" 前缀
    */
   relative: string
-  constructor(filepath: string) {
-    this.filepath = path.resolve(filepath)
-    this.relative = path.relative(_.rootPath, filepath)
-  }
 
-  /** 文件是否存在 */
-  get exists(): boolean {
-    return fs.existsSync(this.filepath)
-  }
-
-  /** 当前文件内容，注意：文件不一定存在 */
-  get content(): string {
-    return _.getFileContent(this.filepath)
-  }
-
-  /** 文件是否为空：包括文件不存在，或者文件内容 trim 后为空字符串 */
-  get empty(): boolean {
-    return this.exists && this.content.trim() === ''
+  /**
+   * Creates an instance of Source.
+   * @param {string} filePath - 文件或文件夹的绝对路径
+   * @memberof Source
+   */
+  constructor(filePath: string) {
+    this.filePath = path.resolve(filePath)
+    this.relative = path.relative(_.rootPath, filePath)
   }
 
   /**
@@ -55,8 +56,7 @@ export class TextFile {
       if (!dtpl) return null
       return dtpl
     } catch (e) {
-      console.error(`dtpl 在执行 getDtpl 函数时报错`)
-      console.error(e)
+      _.error(e)
       return null
     }
   }
@@ -74,25 +74,31 @@ export class TextFile {
    */
   private findNearestMatchedDtpl(isDirectoryTemplate: boolean): IMatchedDtpl | null {
     let {dtplFolderName} = _.config
-    let dtplFolders = this.findAllDirectoriesCanExistsDtplFolder(this.filepath).map(f => path.join(f, dtplFolderName))
+    let dtplFolders = this.findAllDirectoriesCanExistsDtplFolder().map(f => path.join(f, dtplFolderName))
+
+    // 如果刚创建的文件夹正好就是 .dtpl 目录
+    // 则不应该在它下面找配置信息，要忽略它
+    if (isDirectoryTemplate && path.basename(this.filePath) === _.config.dtplFolderName) {
+      dtplFolders = dtplFolders.filter(f => f !== this.filePath)
+    }
 
     dtplFolders.push(path.join(_.dtplRootPath, 'res', '.dtpl')) // dtpl 一定会使用的 .dtpl 目录
 
-    let hookParameter = this.getHookParameter(this.filepath)
+    let sourceParameter = this.getSourceParameter()
     for (let dtplFolder of dtplFolders) {
       if (fs.existsSync(dtplFolder)) {
         let configFile = this.findConfigFileInDtplFolder(dtplFolder)
         let config = configFile ? this.loadDtplConfigFile(configFile) : null
         if (config) {
-          let template = this.getMatchedTemplate(dtplFolder, isDirectoryTemplate, hookParameter, config)
+          let template = this.getMatchedTemplate(dtplFolder, isDirectoryTemplate, sourceParameter, config)
 
           if (template) {
             let basicData = this.getBasicData()
-            let locals = config.getLocalData ? config.getLocalData(template, hookParameter) : null
+            let locals = config.getLocalData ? config.getLocalData(template, sourceParameter) : null
             if (!locals && typeof locals !== 'object') locals = {}
             const templatePath = path.join(dtplFolder, template.name)
             _.log(`找到匹配的模板 ${templatePath}`)
-            return {template, config, folder: dtplFolder, templatePath, data: {...basicData, ...locals}}
+            return {template, config, src: sourceParameter, folder: dtplFolder, templatePath, data: {...basicData, ...locals}}
           }
         }
       }
@@ -105,7 +111,7 @@ export class TextFile {
   /**
    * 获取渲染模板用的基本数据
    */
-  getBasicData(): _.IBasicData {
+  private getBasicData(): _.IBasicData {
     let d = new Date()
     let pad = (n: number): number | string => n < 10 ? '0' + n : n
     let date = [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(pad).join('-')
@@ -119,7 +125,7 @@ export class TextFile {
     try { pkg = require(path.join(rootPath, 'package.json')) } catch (e) { }
 
     let relativeFilePath = this.relative
-    let filePath = this.filepath
+    let filePath = this.filePath
     let dirPath = path.dirname(filePath)
     let fileExt = path.extname(filePath)
     let fileName = path.basename(filePath, fileExt)
@@ -147,7 +153,7 @@ export class TextFile {
   /**
    * 根据用户的配置，查找一个匹配的并且存在的模板文件
    */
-  private getMatchedTemplate(dtplFolder: string, isDirectoryTemplate: boolean, param: _.IHookParameter, config: _.IConfig): _.ITemplate | undefined {
+  private getMatchedTemplate(dtplFolder: string, isDirectoryTemplate: boolean, param: _.ISource, config: _.IConfig): _.ITemplate | undefined {
     if (!config.getTemplates) {
       _.warning('dtpl 的配置文件需要导出 getTemplates 函数')
       return
@@ -188,11 +194,26 @@ export class TextFile {
   /**
    * 生成调用 config.getTemplates 和 config.getLocalData 函数的参数
    */
-  private getHookParameter(filePath: string): _.IHookParameter {
+  private getSourceParameter(): _.ISource {
+    let filePath = this.filePath
+    let stats: fs.Stats | undefined
+    let {ejs, njk, dtpl} = _.config.renderExtensions
+    try {
+      stats = fs.statSync(filePath)
+    } catch (e) {}
     return {
       filePath,
-      fileContent: fs.existsSync(filePath) ? _.getFileContent(filePath) : null,
-      relativeFilePath: path.relative(_.rootPath, filePath)
+      exists: !!stats,
+      isFile: stats ? stats.isFile() : false,
+      isDirectory: stats ? stats.isDirectory() : false,
+      fileContent: stats && stats.isFile() ? _.getFileContent(filePath) : null,
+      relativeFilePath: this.relative,
+      configuration: {
+        dtplFolderName: _.config.dtplFolderName,
+        dtplExtension: dtpl,
+        njkExtension: njk,
+        ejsExtension: ejs
+      }
     }
   }
 
@@ -214,14 +235,14 @@ export class TextFile {
 
     for (let n of names) {
       let f = path.join(dtplFolder, n)
-      if (fs.existsSync(f)) {
+      if (fs.existsSync(f) && fs.statSync(f).isFile()) {
         result = f
         break
       }
     }
 
     if (!result) {
-      _.warning(`dtpl 目录 ${dtplFolder} 里没有配置文件`)
+      _.warning(`目录 ${dtplFolder} 里没有配置文件`)
     }
 
     return result
@@ -230,10 +251,10 @@ export class TextFile {
   /**
    * 根据提供的文件，向上查找到所有可能有存放 .dtpl 文件夹的目录
    */
-  private findAllDirectoriesCanExistsDtplFolder(file: string): string[] {
+  private findAllDirectoriesCanExistsDtplFolder(): string[] {
     let result = []
 
-    let dir = path.dirname(file)
+    let dir = this.filePath // 不用管它是文件还是文件夹
     result.push(dir)
 
     while (dir !== path.resolve(dir, '..')) {

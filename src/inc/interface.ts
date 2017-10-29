@@ -1,10 +1,24 @@
-export interface IHookParameter {
+export interface ISource {
   /** 当前需要处理的文件路径 */
   filePath: string
+  /** filePath 所指定的路径是否存在 */
+  exists: boolean
+  /** filePath 所指定的路径是一个文件 */
+  isFile: boolean
+  /** filePath 所指定的路径是一个目录 */
+  isDirectory: boolean
   /** filePath 的文件内容，当文件不存在时，内容为 null */
   fileContent: string | null
   /** filePath 相对项目根目录的路径 */
   relativeFilePath: string
+
+  /** 相关 dot-template 配置信息 */
+  configuration: {
+    dtplFolderName: string
+    dtplExtension: string
+    ejsExtension: string
+    njkExtension: string
+  }
 }
 
 export interface IRelated {
@@ -76,6 +90,28 @@ export interface ITemplate extends ITemplateProp {
   /** 模板的名称，需要在同目录下有个和 name 一致的文件 */
   name: string
 }
+export interface ITemplatePropFilterReturns {
+  /**
+   * 返回一个相对模板目录的新的文件路径
+   */
+  rename?: string
+
+  /**
+   * 新的文件内容（文件夹时此字段无效）
+   */
+  content?: string
+}
+export interface ITemplatePropFilter {
+  /**
+   * 过滤目录模板中的文件（TODO: 换成对象，加上 stats）
+   *
+   * @param {string} name - 文件名称
+   * @param {string} relativeFilePath - 相对模板目录的文件路径
+   * @param {string} absoluteFilePath - 绝对路径
+   * @returns {(boolean | ITemplatePropFilterReturns)}
+   */
+  (name: string, relativeFilePath: string, absoluteFilePath: string): boolean | ITemplatePropFilterReturns
+}
 export interface ITemplateProp {
   /**
    * 指定一个模板文件，用于在编辑 .dtpl 文件是可以看到此文件的数据
@@ -83,6 +119,10 @@ export interface ITemplateProp {
    * 不需要是实际存在的文件
    */
   sample?: string
+
+  filter?: ITemplatePropFilter
+  afterFilter?: (fromDir: string, toDir: string, created: {files: string[], folders: string[]}) => void
+
 
   /**
    * 获取关联的文件信息
@@ -92,7 +132,7 @@ export interface ITemplateProp {
    */
   related?: (data: IData, fileContent: string) => IRelated | IRelated[]
 
-  onRender?: (content: string) => string
+  // onRender?: (content: string) => string
 
   /** 匹配函数或 minimatch 的 pattern */
   matches: string | (() => boolean) | Array<string | (() => boolean)>
@@ -101,8 +141,8 @@ export interface ITemplateProp {
 export interface ILocalData { [key: string]: any }
 
 export interface IConfig {
-  getTemplates?(param: IHookParameter): ITemplates
-  getLocalData?(template: ITemplate, param: IHookParameter): ILocalData | undefined
+  getTemplates?(param: ISource): ITemplates
+  getLocalData?(template: ITemplate, param: ISource): ILocalData | undefined
 }
 
 export type IData = IBasicData | IBasicData & ILocalData

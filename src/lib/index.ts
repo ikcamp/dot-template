@@ -1,3 +1,3 @@
 export * from './Commander'
-export * from './TextFile'
+export * from './Source'
 export * from './render'

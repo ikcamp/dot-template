@@ -49,7 +49,6 @@ export class Commander {
     try {
       return await fn.apply(context)
     } catch (e) {
-      console.error('执行 Command 是报错了')
       console.error(e)
       throw e
     }

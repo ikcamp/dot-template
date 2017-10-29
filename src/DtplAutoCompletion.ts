@@ -1,5 +1,5 @@
 import {CompletionItemProvider, TextDocument, Position, CompletionItem, Range, CompletionItemKind} from 'vscode'
-import {TextFile} from './lib/'
+import {Source} from './lib/'
 import * as DotProp from 'mora-scripts/libs/lang/DotProp'
 
 const variableRegexp = /\$\{?([\-\w\.]*)$/
@@ -12,7 +12,7 @@ export class DtplAutoCompletion implements CompletionItemProvider {
     const matches = text.match(variableRegexp)
     if (!matches) return []
 
-    let data = new TextFile(document.fileName).getData()
+    let data = new Source(document.fileName).getData()
 
     let prefix = matches[1]
     if (matches[0].indexOf('{') >= 0 && prefix.indexOf('.') > 0) {

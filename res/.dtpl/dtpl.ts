@@ -1,10 +1,16 @@
 import * as _ from '../../src/inc/interface'
 
-export function getTemplates(param: _.IHookParameter): _.ITemplates {
+import * as path from 'path'
+
+// 这个是在所有用户设置的模板的最后面匹配的
+export function getTemplates(source: _.ISource): _.ITemplates {
   return [
     {
-      name: 'folder',
-      matches: 'xxxx'
+      name: 'template',
+      matches: () => {
+        let {isDirectory, filePath, configuration} = source
+        return isDirectory && path.basename(filePath) === configuration.dtplFolderName
+      }
     },
     {
       name: 'example2.ts.dtpl',
@@ -27,6 +33,6 @@ export function getTemplates(param: _.IHookParameter): _.ITemplates {
   ]
 }
 
-export function getLocalData(template: _.ITemplate, param: _.IHookParameter): _.ILocalData | undefined {
+export function getLocalData(template: _.ITemplate, source: _.ISource): _.ILocalData | undefined {
   return
 }

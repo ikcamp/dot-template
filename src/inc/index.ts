@@ -1,5 +1,4 @@
 export * from './interface'
-export * from './log'
 export * from './util'
 export * from './config'
 export * from './transformer'

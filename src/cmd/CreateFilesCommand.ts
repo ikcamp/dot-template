@@ -2,7 +2,7 @@ import * as fs from 'fs-extra'
 // import * as vscode from 'vscode'
 
 import * as _ from '../inc'
-import {Command, TextFile, render} from '../lib/'
+import {Command, Source, render} from '../lib/'
 
 
 /**
@@ -35,8 +35,8 @@ export class CreateFilesCommand extends Command {
   async execute(): Promise<boolean> {
     let result = await _.series(this.files, async (file) => {
       _.log('CreateFilesCommand: 开始创建文件 ' + _.getRelativeFilePath(file))
-      let tf = new TextFile(file)
-      let dtpl = tf.getDtpl()
+      let src = new Source(file)
+      let dtpl = src.getDtpl()
 
       let opened = false
       let content: string | undefined

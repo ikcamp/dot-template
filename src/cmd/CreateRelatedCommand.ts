@@ -2,7 +2,7 @@ import * as fs from 'fs-extra'
 import * as vscode from 'vscode'
 import * as os from 'os'
 import * as _ from '../inc'
-import {Command, TextFile, IMatchedDtpl, render} from '../lib/'
+import {Command, Source, IMatchedDtpl, render} from '../lib/'
 
 interface IPoint {
   x: number
@@ -10,7 +10,7 @@ interface IPoint {
 }
 
 interface IMoreExtendRelated extends _.IExtendRelated {
-  tf: TextFile
+  src: Source
   dtpl: IMatchedDtpl | null
 }
 
@@ -22,19 +22,15 @@ export class CreateRelatedCommand extends Command {
    * 创建关联文件
    *
    * related 所关联的文件都是不存在的
-   * @param {TextFile} refFile
-   * @param {IMatchedDtpl} refDtpl
-   * @param {_.IExtendRelated[]} related
-   * @memberof CreateRelatedCommand
    */
   constructor(private editor: vscode.TextEditor, refDtpl: IMatchedDtpl, related: _.IExtendRelated[]) {
     super()
 
     this.related = related.map(r => {
-      let tf = new TextFile(r.filePath)
-      let dtpl = tf.getDtpl()
+      let src = new Source(r.filePath)
+      let dtpl = src.getDtpl()
       if (dtpl) dtpl.data.ref = refDtpl.data
-      return {...r, tf, dtpl}
+      return {...r, src, dtpl}
     })
   }
 

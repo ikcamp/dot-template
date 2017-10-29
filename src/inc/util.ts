@@ -2,6 +2,8 @@ import * as fs from 'fs-extra'
 import * as path from 'path'
 import * as vscode from 'vscode'
 
+export const debug = vscode.workspace.getConfiguration('dot-template').get('debug')
+
 /** dot-template 项目的根目录 */
 export const dtplRootPath = path.resolve(__dirname, '..', '..')
 
@@ -11,6 +13,12 @@ export const rootPath = vscode.workspace && vscode.workspace.rootPath || process
 const jsLanguageIds = ['typescriptreact', 'javascriptreact', 'typescript', 'javascript']
 export function isJsEditor(editor: vscode.TextEditor) {
   return jsLanguageIds.includes(editor.document.languageId)
+}
+
+export function delay<T>(timeout: number, any?: T): Promise<T> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(any), timeout)
+  })
 }
 
 /**
@@ -82,6 +90,15 @@ export function enableRequireTsFile() {
 
 export function warning(str: string) {
   vscode.window.showWarningMessage(`dtpl: ${str}`)
+}
+
+export function error(e: any) {
+  console.error(e)
+  vscode.window.showErrorMessage(`dtpl: ${e.message || JSON.stringify(e)}`)
+}
+
+export function log(...args: any[]) {
+  if (debug) console.log('[dot-template]', ...args)
 }
 
 

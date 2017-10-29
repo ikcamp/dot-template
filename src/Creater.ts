@@ -2,9 +2,9 @@ import * as vscode from 'vscode'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import {TextFile, Commander} from './lib/'
+import {Source, Commander} from './lib/'
 import * as _ from './inc/'
-import * as c from './cmd'
+import * as c from './cmd/'
 
 export class Creater {
 
@@ -14,15 +14,16 @@ export class Creater {
    * 标识当前正在使用 命令，fileSystemWatcher 监听到的文件变化不算数
    */
   private commanding = false
-  private cmd(fn: () => Promise<any>) {
-    return async () => {
+  private cmd(name: string, fn: (...args: any[]) => Promise<any>) {
+    return async (...args: any[]) => {
       this.commanding = true
+      _.log('开始处理命令', name)
       try {
-        await fn.apply(this)
+        await fn.apply(this, args)
       } catch (e) {
-        console.error('dtpl 执行命令报错了！')
-        console.error(e)
+        _.error(e)
       }
+      _.log('结束处理命令', name)
       this.commanding = false
     }
   }
@@ -30,14 +31,14 @@ export class Creater {
   private cmder = new Commander(1)
 
   // 暴躁在外面的方法需要 autobind
-  createTemplateFile = this.cmd(this._createTemplateFile)
-  createRelatedFile = this.cmd(this._createRelatedFile)
-  rollbackCreates = this.cmd(async () => {
+  createTemplateFile = this.cmd('Create Template File', this._createTemplateFile)
+  createRelatedFile = this.cmd('Create Related File', this._createRelatedFile)
+  createTemplateFolder = this.cmd('Create Template Folder', this._createTemplateFolder)
+  rollbackCreates = this.cmd('Rollback OR Recovery', async () => {
     this.cmder.hasPrev
       ? await this.cmder.prev()
       : await this.cmder.next()
   })
-
 
   constructor() {
     _.log('Creater init')
@@ -48,8 +49,16 @@ export class Creater {
   }
   //#endregion
 
-  private async createTemplateFolder(folder: string): Promise<boolean> {
-    return true
+  private async _createTemplateFolder(folder: string): Promise<boolean> {
+    // 源文件夹目录下有文件了，不处理
+    if (fs.readdirSync(folder).length) return false
+
+    let src = new Source(folder)
+    let dtpl = src.getDtpl(true)
+    if (!dtpl) return false
+    // 延迟 1 秒返回结果
+    // 主要是因为怕创建的新的文件或文件夹又触发了监听事件
+    return _.delay(1000, await this.cmder.add(new c.CreateFolderCommand(dtpl)))
   }
 
   private async _createTemplateFile() {
@@ -90,10 +99,12 @@ export class Creater {
 
     let editor = vscode.window.activeTextEditor
     let currentfile = editor.document.fileName
-    let tf = new TextFile(currentfile)
-    let dtpl = tf.getDtpl()
+    let src = new Source(currentfile)
+    let dtpl = src.getDtpl()
     if (!dtpl) return false
-    let _related = dtpl.template.related ? dtpl.template.related(dtpl.data, tf.content) : null
+    let _related = dtpl.template.related
+      ? dtpl.template.related(dtpl.data, _.getFileContent(currentfile))
+      : null
     let related = !_related ? [] : Array.isArray(_related) ? _related : [_related]
 
     let extendRelated: _.IExtendRelated[] = related
