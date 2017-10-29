@@ -97,25 +97,67 @@
 If you have any requirements or dependencies, add a section describing those and how to install and configure them.
 -->
 
+<a id="configure"></a>
+
 ## 项目配置
 
-* `dot-template.templatePathSeparator`: 模板文件名称中的目录分隔符，默认值 `:`
+<!--# INJECT_START configure #-->
+* `dot-template.dtplFolderName`: 文件夹的名称，用于存放模板文件及相关配置文件
+     默认值： `".dtpl"`
+* `dot-template.dtplExtension`: 指定 dtpl 模板文件的后缀名
+     默认值： `".dtpl"`
+* `dot-template.ejsExtension`: 指定 ejs 模板文件的后缀名
+     默认值： `".ejs"`
+* `dot-template.njkExtension`: 指定 nunjucks 模板文件的后缀名
+     默认值： `".njk"`
+* `dot-template.minimatchOptions`: minimatch 的选项，用于匹配模板名称, 参考：https://github.com/isaacs/minimatch#options
+     默认值： `{"matchBase":true,"nocomment":true,"dot":true}`
+<!--# INJECT_END #-->
 
-  因为文件名称中不允许出现 `/` 或 `\` 字符，所以为了模拟路径匹配，需要使用一个替代符号
+<a id="commands"></a>
 
-* `dot-template.templateExtension`: 模板文件的后缀名，默认值 `.dtpl`
+## 支持命令
 
-* `dot-template.templateDirectory`: 存放模板文件的文件夹的名称，默认值 `.dtpl`
+<!--# INJECT_START commands #-->
+* `createTemplateFile`: DTPL: Create template files
+    win 快捷键： `ctrl+k ctrl+p`
+    mac 快捷键： `cmd+k cmd+p`
+* `createRelatedFile`: DTPL: Create related file
+    win 快捷键： `ctrl+k ctrl+s`
+    mac 快捷键： `cmd+k cmd+s`
+* `rollbackCreates`: DTPL: Rollback or recover created files
+    win 快捷键： `ctrl+k ctrl+u`
+    mac 快捷键： `cmd+k cmd+u`
+<!--# INJECT_END #-->
 
-* `dot-template.templateMinimatchOptions`: [minimatch 的选项](https://github.com/isaacs/minimatch#options)，用于匹配模板名称，默认值 `{"matchBase": true,"nocomment": true,"dot": true}`
+<a id="environment"></a>
 
-* `dot-template.globalTemplateVariableFiles`: 全局的自定义环境变量文件，支持 json, js, 和 ts 文件，需要使用绝对路径，路径名称中支持变量 `${npmPath}` 和 `${rootPath}` 等默认的环境变量，默认值 `[]`
+## 基本的环境变量
 
-* `dot-template.localTemplateVariableFileName`: 模板文件目录下的自定义环境变量的文件的名称，不包含路径，不包含后缀名，会自动检查带 `.json`, `.js`, `.ts` 后缀的文件是否存在，存在的话就使用它，默认值 `local`
+<!--# INJECT_START environment #-->
+  **Variablle**        |  **Type**                 |  **Nullable**   |  **Description**               
+-----------------------|---------------------------|-----------------|--------------------------------
+  `rootPath`           |  `string`                 |                 |  项目根目录路径                
+  `npmPath`            |  `string`                 |                 |  node_modules 目录路径         
+  `date`               |  `string`                 |                 |  当前日期                      
+  `time`               |  `string`                 |                 |  当前时间                      
+  `datetime`           |  `string`                 |                 |  当前日期与时间                
+  `user`               |  `string`                 |                 | 系统用户，读取环境变量中的 HOME
+  `pkg`                |  `{[key: string]: any}`   |                 |项目根目录上的 package.json 文件的内容
+  `filePath`           |  `string`                 |                 |  当前文件的绝对路径            
+  `relativeFilePath`   |  `string`                 |                 |  当前文件相对根目录的路径      
+  `fileName`           |  `string`                 |                 | 当前文件的名称，不带路径和后缀 
+  `fileExt`            |  `string`                 |                 |  当前文件的后缀                
+  `dirPath`            |  `string`                 |                 |  当前文件的目录的绝对路径      
+  `dirName`            |  `string`                 |                 |  当前文件的目录的名称          
+  `rawModuleName`      |  `string`                 |                 |  和 fileName 一致              
+  `moduleName`         |  `string`                 |                 |  fileName 的驼峰形式           
+  `ModuleName`         |  `string`                 |                 |fileName 中的每个单词首字母都大写
+  `MODULE_NAME`        |  `string`                 |                 |fileName 中所有字母都大写，并用下划线连接
+  `module_name`        |  `string`                 |                 |fileName 中所有字母都小写，并用下划线连接
+  `ref`                |  `IData`                  |  Yes            |创建 related 文件时，原文件的 data 对象
+<!--# INJECT_END #-->
 
-* `dot-template.importStyleTemplate`: 导入的样式文件模板（按 `cmd+k cmd+p`时生成的内容），默认值 `import './style/$rawModuleName.scss'`，路径中支持使用默认的环境变量和全局的环境变量
-
-* `dot-template.referenceFilePath`: 根据当前文件，创建一个与之相关的文件时的文件路径（按 `cmd+k cmd+r`时生成的文件）
 
 <!--
 ## Known Issues
@@ -123,6 +165,3 @@ If you have any requirements or dependencies, add a section describing those and
 Calling out known issues can help limit users opening duplicate issues against your extension.
 -->
 
-## 待办事项
-
-* [ ] 支持其它 render，如 ejs

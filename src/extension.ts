@@ -16,6 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCompletionItemProvider(dtplDocumentSelector, new DtplAutoCompletion(), '$', '.', '${'),
     vscode.commands.registerCommand('extension.createTemplateFile', creater.createTemplateFile),
     vscode.commands.registerCommand('extension.createRelatedFile', creater.createRelatedFile),
+    vscode.commands.registerCommand('extension.rollbackCreates', creater.rollbackCreates)
   )
 }
 

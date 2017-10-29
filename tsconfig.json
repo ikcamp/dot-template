@@ -1,29 +1,29 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es5",
-        "outDir": "out",
-        "noUnusedLocals": true,
-        "noImplicitAny": true,
-        "noUnusedParameters": false,
-        "noImplicitThis": true,
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitReturns": true,
-        "strict": true,
-        "strictNullChecks": true,
-        "experimentalDecorators": true,
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "outDir": "out",
+    "noUnusedLocals": true,
+    "noImplicitAny": true,
+    "noUnusedParameters": false,
+    "noImplicitThis": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
 
-        "pretty": true,
-        "importHelpers": true,
+    "pretty": true,
+    "importHelpers": true,
 
-        "lib": [
-            "es2016"
-        ],
-        "sourceMap": true,
-        "rootDir": "src"
-    },
-    "exclude": [
-        "node_modules",
-        ".vscode-test"
-    ]
+    "lib": [
+      "es2016"
+    ],
+    "sourceMap": true,
+    "rootDir": "src"
+  },
+  "exclude": [
+    "node_modules",
+    ".vscode-test"
+  ]
 }

@@ -1,5 +1,5 @@
 import {CompletionItemProvider, TextDocument, Position, CompletionItem, Range, CompletionItemKind} from 'vscode'
-import {TextFile} from './TextFile'
+import {TextFile} from './lib/'
 import * as DotProp from 'mora-scripts/libs/lang/DotProp'
 
 const variableRegexp = /\$\{?([\-\w\.]*)$/

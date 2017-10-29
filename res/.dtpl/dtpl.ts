@@ -3,6 +3,10 @@ import * as _ from '../../src/inc/interface'
 export function getTemplates(param: _.IHookParameter): _.ITemplates {
   return [
     {
+      name: 'folder',
+      matches: 'xxxx'
+    },
+    {
       name: 'example2.ts.dtpl',
       matches: 'widget/*.ts'
     },

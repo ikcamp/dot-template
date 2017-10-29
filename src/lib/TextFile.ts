@@ -1,9 +1,8 @@
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import * as minimatch from 'minimatch'
-import * as DotProp from 'mora-scripts/libs/lang/DotProp'
 
-import * as _ from './inc/'
+import * as _ from '../inc/'
 
 export interface IMatchedDtpl {
   /** 当前匹配到的 .dtpl 的目录 */
@@ -17,8 +16,6 @@ export interface IMatchedDtpl {
   /** 渲染模板用的数据 */
   data: _.IData
 }
-
-const TPL_VARABLE_REGEXP = /\$([a-zA-Z][\-\w]*)|\$\{([a-zA-Z][\-\w\.]*)\}/g
 
 export class TextFile {
   /**
@@ -52,11 +49,10 @@ export class TextFile {
   /**
    * 获取模板 和 渲染的信息
    */
-  getDtpl(refFile?: string | null): IMatchedDtpl | null {
+  getDtpl(isDirectoryTemplate: boolean = false): IMatchedDtpl | null {
     try {
-      let dtpl = this.findNearestMatchedDtpl()
+      let dtpl = this.findNearestMatchedDtpl(isDirectoryTemplate)
       if (!dtpl) return null
-      if (refFile) dtpl.data.ref = this.getRefData(refFile)
       return dtpl
     } catch (e) {
       console.error(`dtpl 在执行 getDtpl 函数时报错`)
@@ -68,26 +64,15 @@ export class TextFile {
   /**
    * 获取渲染数据
    */
-  getData(refFile?: string | null): _.IData {
-    let dtpl = this.getDtpl(refFile)
-    if (dtpl) return dtpl.data
-    let data = this.getBasicData()
-    return refFile ? {...data, ref: this.getRefData(refFile)} : data
-  }
-
-  /**
-   * 获取关联的文件的 data
-   */
-  private getRefData(refFile: string): _.IData {
-    let f = new TextFile(refFile)
-    let dtpl = f.findNearestMatchedDtpl()
-    return dtpl ? dtpl.data : f.getBasicData()
+  getData(): _.IData {
+    let dtpl = this.getDtpl()
+    return dtpl ? dtpl.data : this.getBasicData()
   }
 
   /**
    * 找到最近的匹配的 dtpl 目录及相关配置和模板及模板数据，可能返回 null
    */
-  private findNearestMatchedDtpl(): IMatchedDtpl | null {
+  private findNearestMatchedDtpl(isDirectoryTemplate: boolean): IMatchedDtpl | null {
     let {dtplFolderName} = _.config
     let dtplFolders = this.findAllDirectoriesCanExistsDtplFolder(this.filepath).map(f => path.join(f, dtplFolderName))
 
@@ -99,14 +84,14 @@ export class TextFile {
         let configFile = this.findConfigFileInDtplFolder(dtplFolder)
         let config = configFile ? this.loadDtplConfigFile(configFile) : null
         if (config) {
-          let template = this.getMatchedTemplate(dtplFolder, hookParameter, config)
+          let template = this.getMatchedTemplate(dtplFolder, isDirectoryTemplate, hookParameter, config)
 
           if (template) {
             let basicData = this.getBasicData()
             let locals = config.getLocalData ? config.getLocalData(template, hookParameter) : null
             if (!locals && typeof locals !== 'object') locals = {}
             const templatePath = path.join(dtplFolder, template.name)
-            _.log(`找到匹配的模板文件 ${templatePath}`)
+            _.log(`找到匹配的模板 ${templatePath}`)
             return {template, config, folder: dtplFolder, templatePath, data: {...basicData, ...locals}}
           }
         }
@@ -160,33 +145,9 @@ export class TextFile {
   }
 
   /**
-   * 渲染模板，返回渲染后的文件内容
-   */
-  render(templateFile: string, data: {[key: string]: any}): string {
-    let exts = _.config.renderExtensions
-    let content = _.getFileContent(templateFile)
-
-    if (templateFile.endsWith(exts.ejs)) {
-
-    } else if (templateFile.endsWith(exts.dtpl)) {
-      return content.replace(TPL_VARABLE_REGEXP, (_, key1, key2) => {
-        let key = key1 || key2
-        if (key in data) return data[key]
-        if (key.indexOf('.') > 0 && DotProp.has(data, key)) return DotProp.get(data, key)
-        return ''
-      })
-
-    } else if (templateFile.endsWith(exts.njk)) {
-
-    }
-
-    return content
-  }
-
-  /**
    * 根据用户的配置，查找一个匹配的并且存在的模板文件
    */
-  private getMatchedTemplate(dtplFolder: string, param: _.IHookParameter, config: _.IConfig): _.ITemplate | undefined {
+  private getMatchedTemplate(dtplFolder: string, isDirectoryTemplate: boolean, param: _.IHookParameter, config: _.IConfig): _.ITemplate | undefined {
     if (!config.getTemplates) {
       _.warning('dtpl 的配置文件需要导出 getTemplates 函数')
       return
@@ -207,9 +168,16 @@ export class TextFile {
           result = m()
         }
 
-        if (result && !fs.existsSync(path.join(dtplFolder, t.name))) {
-          _.warning(`匹配到的模板文件 ${path.join(dtplFolder, t.name)} 不存在，已忽略`)
-          result = false
+        if (result) {
+          let templatePath = path.join(dtplFolder, t.name)
+          if (!fs.existsSync(templatePath)) {
+            _.warning(`匹配到的模板文件 ${templatePath} 不存在，已忽略`)
+            result = false
+          }
+          let stats = fs.statSync(templatePath)
+          if (stats.isFile() && isDirectoryTemplate || stats.isDirectory() && !isDirectoryTemplate) {
+            result = false
+          }
         }
 
         return result

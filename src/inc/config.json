@@ -78,22 +78,27 @@
     },
     "ref": {
       "optional": true,
-      "type": "IBasicData | IBasicData & ILocalData",
+      "type": "IData",
       "description": "创建 related 文件时，原文件的 data 对象"
     }
   },
 
   "commands": {
     "createTemplateFile": {
-      "title": "dtpl: 创建文件并注入模板内容",
+      "title": "DTPL: Create template files",
       "key": "ctrl+k ctrl+p",
       "mac": "cmd+k cmd+p"
     },
 
     "createRelatedFile": {
-      "title": "dtpl: 创建关联文件并注入模板内容",
+      "title": "DTPL: Create related file",
       "key": "ctrl+k ctrl+s",
       "mac": "cmd+k cmd+s"
+    },
+    "rollbackCreates": {
+      "title":"DTPL: Rollback or recover created files",
+      "key": "ctrl+k ctrl+u",
+      "mac": "cmd+k cmd+u"
     }
   },
 

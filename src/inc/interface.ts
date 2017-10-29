@@ -38,20 +38,36 @@ export interface IRelated {
    */
   reference?: string | undefined
 
-  /** 插入 reference 的行号 */
-  row?: number
+  /**
+   * 插入 reference 起始坐标
+   *
+   * 如果没设置 from，则默认为 {x: 0, y: 0}
+   *
+   */
+  begin?: {x: number, y?: number}
 
-  /** 插入 reference 的列号 */
-  col?: number
+  /**
+   * 插入 reference 结束坐标 (包含结束点)
+   *
+   * 如果不设置 end，则默认和 from 一样
+   */
+  end?: {x: number, y?: number}
 
   /**
    * 开个小灶
    *
    * 如果是样式文件的话，指定此字段后，可以智能的将 reference 插入到所有 require 或 import 的最后面
    *
-   * 如果当前编辑的文件不是 js/ts 文件，或没有指定 reference，或设置了 row 或 col 时，设置了此字段也不会起作用
+   * 如果当前编辑的文件不是 js/ts 文件，或没有指定 reference，或设置了 begin 或 end 时，设置了此字段也不会起作用
    */
   smartInsertStyle?: boolean
+}
+
+export interface IExtendRelated extends IRelated {
+  /**
+   * 关联文件的绝对路径
+   */
+  filePath: string
 }
 
 export type ITemplates = ITemplate[] | {[name: string]: ITemplateProp}
@@ -71,10 +87,12 @@ export interface ITemplateProp {
   /**
    * 获取关联的文件信息
    *
-   * 如果当前编辑的文件不内容时，不会向它注入模板，但可以创建一个关联文件，
+   * 如果当前编辑的文件没内容时，不会向它注入模板，但可以创建一个关联文件，
    * 这时会调用此函数来获取关联文件的信息
    */
-  related?: (data: IData, fileContent: string) => IRelated
+  related?: (data: IData, fileContent: string) => IRelated | IRelated[]
+
+  onRender?: (content: string) => string
 
   /** 匹配函数或 minimatch 的 pattern */
   matches: string | (() => boolean) | Array<string | (() => boolean)>
@@ -88,27 +106,103 @@ export interface IConfig {
 }
 
 export type IData = IBasicData | IBasicData & ILocalData
+
 export interface IBasicData {
+  /*# INJECT_START basicData #*/
+  /**
+   * 项目根目录路径
+   * @type {string}
+   */
   rootPath: string
+  /**
+   * node_modules 目录路径
+   * @type {string}
+   */
   npmPath: string
+  /**
+   * 当前日期
+   * @type {string}
+   */
   date: string
+  /**
+   * 当前时间
+   * @type {string}
+   */
   time: string
+  /**
+   * 当前日期与时间
+   * @type {string}
+   */
   datetime: string
+  /**
+   * 系统用户，读取环境变量中的 HOME
+   * @type {string}
+   */
   user: string
+  /**
+   * 项目根目录上的 package.json 文件的内容
+   * @type {{[key: string]: any}}
+   */
   pkg: {[key: string]: any}
-
+  /**
+   * 当前文件的绝对路径
+   * @type {string}
+   */
   filePath: string
+  /**
+   * 当前文件相对根目录的路径
+   * @type {string}
+   */
   relativeFilePath: string
+  /**
+   * 当前文件的名称，不带路径和后缀
+   * @type {string}
+   */
   fileName: string
+  /**
+   * 当前文件的后缀
+   * @type {string}
+   */
   fileExt: string
-
+  /**
+   * 当前文件的目录的绝对路径
+   * @type {string}
+   */
   dirPath: string
+  /**
+   * 当前文件的目录的名称
+   * @type {string}
+   */
   dirName: string
-
+  /**
+   * 和 fileName 一致
+   * @type {string}
+   */
   rawModuleName: string
+  /**
+   * fileName 的驼峰形式
+   * @type {string}
+   */
   moduleName: string
+  /**
+   * fileName 中的每个单词首字母都大写
+   * @type {string}
+   */
   ModuleName: string
+  /**
+   * fileName 中所有字母都大写，并用下划线连接
+   * @type {string}
+   */
   MODULE_NAME: string
+  /**
+   * fileName 中所有字母都小写，并用下划线连接
+   * @type {string}
+   */
   module_name: string
-  ref?: IBasicData | IBasicData & ILocalData
+  /**
+   * 创建 related 文件时，原文件的 data 对象
+   * @type {IData}
+   */
+  ref?: IData
+  /*# INJECT_END #*/
 }

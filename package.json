@@ -22,32 +22,38 @@
   "activationEvents": [
     "*",
     "onLanguage:dtpl",
-    "onCommand:extension.createScriptFile",
-    "onCommand:extension.createStyleFile",
-    "onCommand:extension.createReferenceFile"
+    "onCommand:extension.createTemplateFile",
+    "onCommand:extension.createRelatedFile",
+    "onCommand:extension.rollbackCreates"
   ],
   "main": "./out/extension",
   "icon": "res/images/icon.png",
   "contributes": {
     "configuration": {
       "title": "dot-template",
+      "type": "object",
       "properties": {
-        "dot-template.templatePathSeparator": {
-          "type": "string",
-          "default": ":",
-          "description": "模板文件名称中的目录分隔符"
-        },
-        "dot-template.templateExtension": {
+        "dot-template.dtplFolderName": {
           "type": "string",
           "default": ".dtpl",
-          "description": "模板文件的后缀名"
+          "description": "文件夹的名称，用于存放模板文件及相关配置文件"
         },
-        "dot-template.templateDirectory": {
+        "dot-template.dtplExtension": {
           "type": "string",
           "default": ".dtpl",
-          "description": "存放模板文件的文件夹的名称"
+          "description": "指定 dtpl 模板文件的后缀名"
         },
-        "dot-template.templateMinimatchOptions": {
+        "dot-template.ejsExtension": {
+          "type": "string",
+          "default": ".ejs",
+          "description": "指定 ejs 模板文件的后缀名"
+        },
+        "dot-template.njkExtension": {
+          "type": "string",
+          "default": ".njk",
+          "description": "指定 nunjucks 模板文件的后缀名"
+        },
+        "dot-template.minimatchOptions": {
           "type": "object",
           "default": {
             "matchBase": true,
@@ -93,41 +99,21 @@
               "description": "Returns from negate expressions the same as if they were not negated. (Ie, true on a hit, false on a miss.)"
             }
           }
-
-        },
-        "dot-template.globalTemplateVariableFiles": {
-          "type": "array",
-          "default": [],
-          "items": {
-            "type": "string"
-          },
-          "description": "全局的自定义环境变量文件，支持 json, js, 和 ts 文件，需要使用绝对路径，路径名称中支持变量 `${npmPath}` 和 `${rootPath}` 等默认的环境变量"
-        },
-        "dot-template.localTemplateVariableFileName": {
-          "type": "string",
-          "default": "local",
-          "description": "模板文件目录下的自定义环境变量的文件的名称，不包含路径，不包含后缀名，会自动检查带 `.json`, `.js`, `.ts` 后缀的文件是否存在，存在的话就使用它"
-        },
-        "dot-template.referenceFilePath": {
-          "type": "string",
-          "default": "./$rawModuleName.ref.$extension",
-          "description": "根据当前文件，创建一个与之相关的文件时的文件路径（按 `cmd+k cmd+r`时生成的文件）"
-        },
-        "dot-template.importStyleTemplate": {
-          "type": "string",
-          "default": "import './style/$rawModuleName.scss'",
-          "description": "导入的样式文件模板（按 `cmd+k cmd+s`时生成的内容），路径中支持使用默认的环境变量和全局的环境变量"
         }
       }
     },
     "commands": [
       {
         "command": "extension.createTemplateFile",
-        "title": "dtpl: 创建文件并注入模板内容"
+        "title": "DTPL: Create template files"
       },
       {
         "command": "extension.createRelatedFile",
-        "title": "dtpl: 创建关联文件并注入模板内容"
+        "title": "DTPL: Create related file"
+      },
+      {
+        "command": "extension.rollbackCreates",
+        "title": "DTPL: Rollback or recover created files"
       }
     ],
     "keybindings": [
@@ -140,6 +126,11 @@
         "command": "extension.createRelatedFile",
         "key": "ctrl+k ctrl+s",
         "mac": "cmd+k cmd+s"
+      },
+      {
+        "command": "extension.rollbackCreates",
+        "key": "ctrl+k ctrl+u",
+        "mac": "cmd+k cmd+u"
       }
     ],
     "languages": [
