@@ -6,6 +6,10 @@ import {Source, Commander} from './lib/'
 import * as _ from './inc/'
 import * as c from './cmd/'
 
+const CTF = 'Create Template File'
+const CRF = 'Create Related File'
+const CTD = 'Create Template Folder'
+
 export class Creater {
 
   //#region base
@@ -19,7 +23,13 @@ export class Creater {
       this.commanding = true
       _.log('开始处理命令', name)
       try {
-        await fn.apply(this, args)
+        let result = await fn.apply(this, args)
+        if (name === CTD && result) {
+          let folder = args[0]
+          if (path.basename(folder) === _.config.dtplFolderName) {
+            vscode.window.showInformationMessage(`恭喜，成功创建 dot-template 配置文件夹 ${_.getRelativeFilePath(folder)}，快去该目录下看 dtpl.ts 和 readme.md 文件吧`)
+          }
+        }
       } catch (e) {
         _.error(e)
       }
@@ -31,9 +41,9 @@ export class Creater {
   private cmder = new Commander(1)
 
   // 暴躁在外面的方法需要 autobind
-  createTemplateFile = this.cmd('Create Template File', this._createTemplateFile)
-  createRelatedFile = this.cmd('Create Related File', this._createRelatedFile)
-  createTemplateFolder = this.cmd('Create Template Folder', this._createTemplateFolder)
+  createTemplateFile = this.cmd(CTF, this._createTemplateFile)
+  createRelatedFile = this.cmd(CRF, this._createRelatedFile)
+  createTemplateFolder = this.cmd(CTD, this._createTemplateFolder)
   rollbackCreates = this.cmd('Rollback OR Recovery', async () => {
     this.cmder.hasPrev
       ? await this.cmder.prev()
@@ -102,8 +112,9 @@ export class Creater {
     let src = new Source(currentfile)
     let dtpl = src.getDtpl()
     if (!dtpl) return false
-    let _related = dtpl.template.related
-      ? dtpl.template.related(dtpl.data, _.getFileContent(currentfile))
+    let {template} = dtpl
+    let _related = template.related
+      ? _.runUserFn('template.related', template.related, [dtpl.data, _.getFileContent(currentfile)], template)
       : null
     let related = !_related ? [] : Array.isArray(_related) ? _related : [_related]
 

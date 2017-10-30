@@ -102,6 +102,7 @@ If you have any requirements or dependencies, add a section describing those and
 ## 项目配置
 
 <!--# INJECT_START configure #-->
+* `dot-template.debug`: 开启调试模式，会在 DEBUG CONSOLE 输出很多信息；修改了此配置需要重启编辑器才能生效
 * `dot-template.dtplFolderName`: 文件夹的名称，用于存放模板文件及相关配置文件
      默认值： `".dtpl"`
 * `dot-template.dtplExtension`: 指定 dtpl 模板文件的后缀名

@@ -229,3 +229,14 @@ export async function confirm(message: string, {yes = '确认', no = '取消'} =
   let chose = await vscode.window.showQuickPick([yes, no], {placeHolder: message})
   return chose === yes
 }
+
+export function runUserFn<T>(name: string, fn: (...args: any[]) => T, args: any[] = [], context?: any): T | undefined {
+  let result: T | undefined
+  try {
+    result = fn.apply(context, args)
+  } catch(e) {
+    vscode.window.showErrorMessage('运行自定义函数 ' + name + ' 出错：' + (e && e.message ? e.message : JSON.stringify(e)))
+    console.error(e)
+  }
+  return result
+}

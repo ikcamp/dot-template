@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@types/ejs@~2.3.33":
+  version "2.3.33"
+  resolved "http://registry.npm.taobao.org/@types/ejs/download/@types/ejs-2.3.33.tgz#0a4e0a7aeee09944154b06ce5a2ac6a118f92b00"
+
 "@types/fs-extra@~4.0.2":
   version "4.0.3"
   resolved "http://registry.npm.taobao.org/@types/fs-extra/download/@types/fs-extra-4.0.3.tgz#87343b1ab99415b61817ac894ed622355a0ebf67"
@@ -328,6 +332,10 @@ ecc-jsbn@~0.1.1:
   resolved "http://registry.npm.taobao.org/ecc-jsbn/download/ecc-jsbn-0.1.1.tgz#0fc73a9ed5f0d53c38193398523ef7e543777505"
   dependencies:
     jsbn "~0.1.0"
+
+ejs@~2.5.7:
+  version "2.5.7"
+  resolved "http://registry.npm.taobao.org/ejs/download/ejs-2.5.7.tgz#cc872c168880ae3c7189762fd5ffc00896c9518a"
 
 end-of-stream@^1.0.0:
   version "1.4.0"

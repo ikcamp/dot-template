@@ -78,8 +78,8 @@ export class Source {
 
     // 如果刚创建的文件夹正好就是 .dtpl 目录
     // 则不应该在它下面找配置信息，要忽略它
-    if (isDirectoryTemplate && path.basename(this.filePath) === _.config.dtplFolderName) {
-      dtplFolders = dtplFolders.filter(f => f !== this.filePath)
+    if (isDirectoryTemplate && path.basename(this.filePath) === dtplFolderName) {
+      dtplFolders = dtplFolders.filter(f => f.indexOf(this.filePath) !== 0)
     }
 
     dtplFolders.push(path.join(_.dtplRootPath, 'res', '.dtpl')) // dtpl 一定会使用的 .dtpl 目录
@@ -94,7 +94,7 @@ export class Source {
 
           if (template) {
             let basicData = this.getBasicData()
-            let locals = config.getLocalData ? config.getLocalData(template, sourceParameter) : null
+            let locals = config.getLocalData ? _.runUserFn('getLocalData', config.getLocalData, [template, sourceParameter], config) : null
             if (!locals && typeof locals !== 'object') locals = {}
             const templatePath = path.join(dtplFolder, template.name)
             _.log(`找到匹配的模板 ${templatePath}`)
@@ -111,7 +111,7 @@ export class Source {
   /**
    * 获取渲染模板用的基本数据
    */
-  private getBasicData(): _.IBasicData {
+  getBasicData(): _.IBasicData {
     let d = new Date()
     let pad = (n: number): number | string => n < 10 ? '0' + n : n
     let date = [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(pad).join('-')
@@ -159,19 +159,22 @@ export class Source {
       return
     }
 
-    let minimatchOpts = _.config.minimatchOptions
-
-    let ts = config.getTemplates(param) || []
+    let ts = _.runUserFn('getTemplates', config.getTemplates, [param], config) || []
     let templates = Array.isArray(ts) ? ts : Object.keys(ts).map((name: string) => ({name, ...(ts as {[key: string]: _.ITemplateProp})[name]}))
+    let defaultMinimatchOptions = _.config.minimatchOptions
 
     return templates.find(t => {
       let matches = Array.isArray(t.matches) ? t.matches : [t.matches]
       return !!matches.find(m => {
         let result: boolean = false
         if (typeof m === 'string') {
-          result = minimatch(param.relativeFilePath, m, minimatchOpts)
+          if (t.minimatch === false) {
+            result = param.relativeFilePath === m
+          } else {
+            result = minimatch(param.relativeFilePath, m, typeof t.minimatch !== 'object' ? defaultMinimatchOptions : t.minimatch)
+          }
         } else if (typeof m === 'function') {
-          result = m()
+          result = !!_.runUserFn('template.match', m, [minimatch], t)
         }
 
         if (result) {
@@ -206,7 +209,7 @@ export class Source {
       exists: !!stats,
       isFile: stats ? stats.isFile() : false,
       isDirectory: stats ? stats.isDirectory() : false,
-      fileContent: stats && stats.isFile() ? _.getFileContent(filePath) : null,
+      fileContent: stats && stats.isFile() ? _.getFileContent(filePath) : '',
       relativeFilePath: this.relative,
       configuration: {
         dtplFolderName: _.config.dtplFolderName,
