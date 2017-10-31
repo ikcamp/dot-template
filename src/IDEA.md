@@ -10,7 +10,7 @@
 
 * 更新 Hover 和 Completion 模块
 
-* 支持 nuk 渲染
+* 支持 njk 渲染
 
 
 ## 原则
