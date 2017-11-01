@@ -5,6 +5,8 @@ out/**/*.map
 out/bin.js
 src/**
 .gitignore
+.gitmessage
 tsconfig.json
+wallaby.js
 vsc-extension-quickstart.md
 yarn.lock

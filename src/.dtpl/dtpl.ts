@@ -1,20 +1,20 @@
 import * as path from 'path'
 // import * as os from 'os'
-import * as _ from '../../src/inc/interface'
+import * as _ from '../common/interface'
 
 /**
  * 这个是在所有用户设置的模板的最后面匹配的
  */
-export function getTemplates(source: _.ISource): _.ITemplates {
+export function getTemplates(source: _.Source): _.IUserTemplate[] {
   return [
     {
       // 指定模板名称，需要在同目录下有个同名的文本文件或者文件夹
       // 当前指定的是一个文件夹模板
-      name: 'template',
+      name: '../../res/template',
       // 根据用户当前正在创建或编辑的文件的信息来判断是否需要使用此模板来处理此文件
       matches: () => {
-        let {isDirectory, filePath, configuration} = source
-        return isDirectory && path.basename(filePath) === configuration.dtplFolderName
+        let {isDirectory, filePath} = source
+        return isDirectory && path.basename(filePath) === source.app.editor.configuration.dtplFolderName
       },
 
       /**
@@ -55,10 +55,10 @@ export function getTemplates(source: _.ISource): _.ITemplates {
  *  模板文件夹内的文件都没有 localData，但它可以通过 ref 获取到文件夹模板的 data 数据，
  *  而文件夹模板是可以包含 localData 的
  */
-export function getLocalData(template: _.ITemplate, source: _.ISource): _.ILocalData {
+export function getLocalData(template: _.IUserTemplate, source: _.Source): _.IObject {
   return {
     // 将 interface 文件的绝对路径记录到 interface 上
     // 在创建文件夹模板内的文件时，可以通过 ref.interface 来引用此值
-    interface: path.resolve(__dirname, '..', 'interface')
+    interface: path.resolve(__dirname, '..', '..', 'out', 'core', 'common', 'interface')
   }
 }

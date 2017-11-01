@@ -103,6 +103,8 @@ If you have any requirements or dependencies, add a section describing those and
 
 <!--# INJECT_START configure #-->
 * `dot-template.debug`: 开启调试模式，会在 DEBUG CONSOLE 输出很多信息；修改了此配置需要重启编辑器才能生效
+* `dot-template.commandInvalidTimeout`: 设置命令的有效时间，过期后就无法撤销或重新执行，单位毫秒
+     默认值： `60000`
 * `dot-template.dtplFolderName`: 文件夹的名称，用于存放模板文件及相关配置文件
      默认值： `".dtpl"`
 * `dot-template.dtplExtension`: 指定 dtpl 模板文件的后缀名
@@ -123,10 +125,10 @@ If you have any requirements or dependencies, add a section describing those and
 * `createTemplateFile`: DTPL: Create template files
     win 快捷键： `ctrl+k ctrl+p`
     mac 快捷键： `cmd+k cmd+p`
-* `createRelatedFile`: DTPL: Create related file
+* `createRelatedFiles`: DTPL: Create related files
     win 快捷键： `ctrl+k ctrl+s`
     mac 快捷键： `cmd+k cmd+s`
-* `rollbackCreates`: DTPL: Rollback or recover created files
+* `undoOrRedo`: DTPL: Undo or Redo created files
     win 快捷键： `ctrl+k ctrl+u`
     mac 快捷键： `cmd+k cmd+u`
 <!--# INJECT_END #-->
@@ -136,27 +138,27 @@ If you have any requirements or dependencies, add a section describing those and
 ## 基本的环境变量
 
 <!--# INJECT_START environment #-->
-  **Variablle**        |  **Type**                 |  **Nullable**   |  **Description**               
------------------------|---------------------------|-----------------|--------------------------------
-  `rootPath`           |  `string`                 |                 |  项目根目录路径                
-  `npmPath`            |  `string`                 |                 |  node_modules 目录路径         
-  `date`               |  `string`                 |                 |  当前日期                      
-  `time`               |  `string`                 |                 |  当前时间                      
-  `datetime`           |  `string`                 |                 |  当前日期与时间                
-  `user`               |  `string`                 |                 | 系统用户，读取环境变量中的 HOME
-  `pkg`                |  `{[key: string]: any}`   |                 |项目根目录上的 package.json 文件的内容
-  `filePath`           |  `string`                 |                 |  当前文件的绝对路径            
-  `relativeFilePath`   |  `string`                 |                 |  当前文件相对根目录的路径      
-  `fileName`           |  `string`                 |                 | 当前文件的名称，不带路径和后缀 
-  `fileExt`            |  `string`                 |                 |  当前文件的后缀                
-  `dirPath`            |  `string`                 |                 |  当前文件的目录的绝对路径      
-  `dirName`            |  `string`                 |                 |  当前文件的目录的名称          
-  `rawModuleName`      |  `string`                 |                 |  和 fileName 一致              
-  `moduleName`         |  `string`                 |                 |  fileName 的驼峰形式           
-  `ModuleName`         |  `string`                 |                 |fileName 中的每个单词首字母都大写
-  `MODULE_NAME`        |  `string`                 |                 |fileName 中所有字母都大写，并用下划线连接
-  `module_name`        |  `string`                 |                 |fileName 中所有字母都小写，并用下划线连接
-  `ref`                |  `IData`                  |  Yes            |创建 related 文件时，原文件的 data 对象
+  **Variablle**        |  **Type**                 |  **Nullable**   |  **Description**                                           
+-----------------------|---------------------------|-----------------|------------------------------------------------------------
+  `rootPath`           |  `string`                 |                 |  项目根目录路径                                            
+  `npmPath`            |  `string`                 |                 |  node_modules 目录路径                                     
+  `date`               |  `string`                 |                 |  当前日期                                                  
+  `time`               |  `string`                 |                 |  当前时间                                                  
+  `datetime`           |  `string`                 |                 |  当前日期与时间                                            
+  `user`               |  `string`                 |                 |  系统用户，读取环境变量中的 HOME                           
+  `pkg`                |  `{[key: string]: any}`   |                 |  项目根目录上的 package.json 文件的内容                    
+  `filePath`           |  `string`                 |                 |  当前文件的绝对路径                                        
+  `relativeFilePath`   |  `string`                 |                 |  当前文件相对根目录的路径                                  
+  `fileName`           |  `string`                 |                 |  当前文件的名称，不带路径和后缀                            
+  `fileExt`            |  `string`                 |                 |  当前文件的后缀                                            
+  `dirPath`            |  `string`                 |                 |  当前文件的目录的绝对路径                                  
+  `dirName`            |  `string`                 |                 |  当前文件的目录的名称                                      
+  `rawModuleName`      |  `string`                 |                 |  和 fileName 一样                                          
+  `moduleName`         |  `string`                 |                 |  fileName 的驼峰形式                                       
+  `ModuleName`         |  `string`                 |                 |  fileName 中的每个单词首字母都大写                         
+  `MODULE_NAME`        |  `string`                 |                 |  fileName 中所有字母都大写，并用下划线连接                 
+  `module_name`        |  `string`                 |                 |  fileName 中所有字母都小写，并用下划线连接                 
+  `ref`                |  `IData`                  |  Yes            |创建 related 文件时，原文件的 data 对象；或者创建文件夹模板内的文件时，文件夹的 data 对象
 <!--# INJECT_END #-->
 
 

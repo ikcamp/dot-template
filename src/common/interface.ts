@@ -1,60 +1,9 @@
 import {Stats} from 'fs'
+import {Source} from '../core/file/Source'
+export {Source}
 
 export interface IObject { [key: string]: any }
-export interface ISource {
-  /**
-   * 当前处理的文件的绝对路径（注意：包括文件夹！）
-   *
-   * @type {string}
-   */
-  filePath: string
 
-  /**
-   * filePath 相对项目根目录的路径
-   *
-   * @type {string}
-   */
-  relativeFilePath: string
-
-  /**
-   * 文件是否存在
-   *
-   * 在创建新文件的时候，文件是有可能不存在的
-   *
-   * @type {boolean}
-   */
-  exists: boolean
-  /**
-   * filePath 所指定的路径是一个文件
-   *
-   * @type {boolean}
-   */
-  isFile: boolean
-  /**
-   * filePath 所指定的路径是一个目录
-   *
-   * @type {boolean}
-   */
-  isDirectory: boolean
-  /**
-   * filePath 的文件内容
-   *
-   * 当路径不存在，或路径为文件夹是，此字段为空字符串
-   *
-   * @type {string}
-   */
-  fileContent: string
-
-  /**
-   * 部分在 vscode 中配置的的关于 dot-template 的信息
-   */
-  configuration: {
-    dtplFolderName: string
-    dtplExtension: string
-    ejsExtension: string
-    njkExtension: string
-  }
-}
 
 /**
  * 复制文件夹模板中的每一个文件时生成的一个关于此文件的对象
@@ -169,10 +118,10 @@ export interface IRelated {
   /**
    * 插入 reference 起始坐标
    *
-   * 如果没设置 from，则默认为 {x: 0, y: 0}
+   * 如果没设置 from，则默认为 {row: 0, col: 0}
    *
    */
-  begin?: {x: number, y?: number}
+  begin?: {row: number, col?: number}
 
   /**
    * 插入 reference 结束坐标
@@ -180,7 +129,7 @@ export interface IRelated {
    * - 如果不设置 end，则默认和 from 一样，即完全会插入 reference 在 begin 坐标
    * - 如果设置了 end，则 begin - end 之间的数据全会被 reference 替换了
    */
-  end?: {x: number, y?: number}
+  end?: {row: number, col?: number}
 
   /**
    * 在 js/ts 文件中自动在合适的地方插入样式文件的引用（这是特殊功能，谁要作者是前端呢，给自己开个小灶）
@@ -192,24 +141,22 @@ export interface IRelated {
   smartInsertStyle?: boolean
 }
 
-/** 内部使用的一个对象，系统会根据 IRelated 对象来计算出要创建的关联文件的真实路径 */
-export interface IExtendRelated extends IRelated {
-  /**
-   * 关联文件的绝对路径
-   */
-  filePath: string
+export interface IConfig {
+  getTemplates(source: Source): IUserTemplate[]
+  getLocalData?(template: IUserTemplate, source: Source): IObject
 }
 
-export type ITemplates = ITemplate[] | {[name: string]: ITemplateProp}
-
-export interface ITemplate extends ITemplateProp {
+export interface IUserTemplate {
   /**
    *  模板的名称，需要在同目录下有个和 name 一致的文件
    */
   name: string
-}
 
-export interface ITemplateProp {
+  /**
+   * 渲染模板的数据，也可以通过配置函数 getLocalData 来获取，不过此处设置的优先级最高
+   */
+  data?: IObject
+
   /**
    * 指定一个模板文件，用于在编辑 .dtpl 文件是可以看到此文件的数据
    *
@@ -266,7 +213,7 @@ export interface ITemplateProp {
   /**
    * 匹配函数或 minimatch 的 pattern
    */
-  matches: string | (() => boolean) | Array<string | ((minimatch: IMinimatchFunction) => boolean)>
+  matches: string | ((minimatch: IMinimatchFunction) => boolean) | Array<string | ((minimatch: IMinimatchFunction) => boolean)>
 
   /**
    * 是否使用 minimatch 去匹配 matches 中的字符串
@@ -283,14 +230,7 @@ export interface ITemplateProp {
   minimatch?: boolean | IMinimatchOptions
 }
 
-export interface ILocalData { [key: string]: any }
-
-export interface IConfig {
-  getTemplates?(param: ISource): ITemplates
-  getLocalData?(template: ITemplate, param: ISource): ILocalData | undefined
-}
-
-export type IData = IBasicData | IBasicData & ILocalData
+export type IData = IBasicData | IBasicData & IObject
 
 export interface IBasicData {
   /*# INJECT_START basicData #*/
@@ -360,7 +300,7 @@ export interface IBasicData {
    */
   dirName: string
   /**
-   * 和 fileName 一致
+   * 和 fileName 一样
    * @type {string}
    */
   rawModuleName: string
@@ -385,7 +325,7 @@ export interface IBasicData {
    */
   module_name: string
   /**
-   * 创建 related 文件时，原文件的 data 对象
+   * 创建 related 文件时，原文件的 data 对象；或者创建文件夹模板内的文件时，文件夹的 data 对象
    * @type {IData}
    */
   ref?: IData

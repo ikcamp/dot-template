@@ -4,7 +4,7 @@ import * as os from 'os'
 /**
  * TODO:
  */
-export function getTemplates(source: _.ISource): _.ITemplates {
+export function getTemplates(source: _.Source): _.IUserTemplate[] {
   return [
     {
       // 指定 html 文件模板，匹配所有创建的以 .html 结尾的文件
@@ -97,9 +97,8 @@ export function getTemplates(source: _.ISource): _.ITemplates {
  *  模板文件夹内的文件都没有 localData，但它可以通过 ref 获取到文件夹模板的 data 数据，
  *  而文件夹模板是可以包含 localData 的
  */
-export function getLocalData(template: _.ITemplate, source: _.ISource): _.ILocalData {
+export function getLocalData(template: _.IUserTemplate, source: _.Source): _.IObject {
   return {
     ga: 'UA-xxxxxxxx-xx'
   }
 }
-

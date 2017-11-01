@@ -90,13 +90,14 @@
       "mac": "cmd+k cmd+p"
     },
 
-    "createRelatedFile": {
-      "title": "DTPL: Create related file",
+    "createRelatedFiles": {
+      "title": "DTPL: Create related files",
       "key": "ctrl+k ctrl+s",
       "mac": "cmd+k cmd+s"
     },
-    "rollbackCreates": {
-      "title":"DTPL: Rollback or recover created files",
+
+    "undoOrRedo": {
+      "title":"DTPL: Undo or Redo created files",
       "key": "ctrl+k ctrl+u",
       "mac": "cmd+k cmd+u"
     }
@@ -107,6 +108,12 @@
       "type": "boolean",
       "default": false,
       "description": "开启调试模式，会在 DEBUG CONSOLE 输出很多信息；修改了此配置需要重启编辑器才能生效"
+    },
+
+    "commandInvalidTimeout": {
+      "type": "number",
+      "default": 60000,
+      "description": "设置命令的有效时间，过期后就无法撤销或重新执行，单位毫秒"
     },
     "dtplFolderName": {
       "type": "string",

@@ -4,19 +4,22 @@ import * as vscode from 'vscode'
 import {DtplAutoCompletion} from './DtplAutoCompletion'
 import {DtplHoverProvider} from './DtplHoverProvider'
 
-import {Creater} from './Creater'
+import {Application} from './core/Application'
+import {VscodeEditor} from './adapter/VscodeEditor'
 
 export function activate(context: vscode.ExtensionContext) {
   const dtplDocumentSelector = 'dtpl'
 
-  const creater = new Creater()
+  const editor = new VscodeEditor()
+  const app = new Application(editor)
+
   context.subscriptions.push(
-    creater,
+    app,
     vscode.languages.registerHoverProvider(dtplDocumentSelector, new DtplHoverProvider()),
     vscode.languages.registerCompletionItemProvider(dtplDocumentSelector, new DtplAutoCompletion(), '$', '.', '${'),
-    vscode.commands.registerCommand('extension.createTemplateFile', creater.createTemplateFile),
-    vscode.commands.registerCommand('extension.createRelatedFile', creater.createRelatedFile),
-    vscode.commands.registerCommand('extension.rollbackCreates', creater.rollbackCreates)
+    vscode.commands.registerCommand('extension.createTemplateFile', app.createTemplateFiles),
+    vscode.commands.registerCommand('extension.createRelatedFiles', app.createRelatedFiles),
+    vscode.commands.registerCommand('extension.undoOrRedo', app.undoOrRedo)
   )
 }
 

@@ -12,7 +12,7 @@ import * as assert from 'assert'
 const packagePath = findup.pkg(__dirname)
 const rootPath = path.dirname(packagePath)
 const readmePath = path.join(rootPath, 'README.md')
-const interfacePath = path.join(rootPath, 'src', 'inc', 'interface.ts')
+const interfacePath = path.join(rootPath, 'src', 'common', 'interface.ts')
 
 interface IConfig {
   name: string
@@ -20,14 +20,14 @@ interface IConfig {
   commands: {[key: string]: {title: string, key?: string, mac?: string}}
   options: {[key: string]: {default?: any, type: string, description: string}}
 }
-const config: IConfig = require('./inc/config.json')
+const config: IConfig = require('./src/common/config.json')
 
 cli({
   usage: './bin [options] <command>'
 })
 .commands({
   inject: {
-    desc: xlog.format('根据 %csrc/inc/config.json%c 文件的配置，给项目其它地方注入合适的值', 'yellow', 'reset'),
+    desc: xlog.format('根据 %csrc/common/config.json%c 文件的配置，给项目其它地方注入合适的值', 'yellow', 'reset'),
     cmd: function(res) {
       injectReadme(config)
       injectInterface(config)

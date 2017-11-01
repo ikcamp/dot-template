@@ -13,6 +13,7 @@
     "strictNullChecks": true,
     "experimentalDecorators": true,
 
+    "declaration": true,
     "pretty": true,
     "importHelpers": true,
 

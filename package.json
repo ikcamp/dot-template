@@ -5,12 +5,28 @@
   "version": "0.0.5",
   "publisher": "qiu8310",
   "scripts": {
-    "define": "cp src/inc/interface.ts res/interface.d.ts",
+    "clear": "rm -rf out",
     "vscode:prepublish": "npm run build",
-    "build": "tsc -p ./ && npm run define",
+    "build": "npm run clear && tsc -p ./",
     "watch": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "npm run build && node ./node_modules/vscode/bin/test"
+    "test": "nyc _mocha -R dot src/test/core/test*",
+    "report": "nyc report --reporter html --report-dir out/coverage",
+    "test:vscode": "npm run build && node ./node_modules/vscode/bin/test"
+  },
+  "nyc": {
+    "require": [
+      "ts-node/register"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "check-coverage": false,
+    "include": [
+      "src/common/*.ts",
+      "src/core/**/*.ts"
+    ],
+    "exclude": []
   },
   "config": {
     "hooks": {
@@ -37,8 +53,8 @@
     "*",
     "onLanguage:dtpl",
     "onCommand:extension.createTemplateFile",
-    "onCommand:extension.createRelatedFile",
-    "onCommand:extension.rollbackCreates"
+    "onCommand:extension.createRelatedFiles",
+    "onCommand:extension.undoOrRedo"
   ],
   "main": "./out/extension",
   "icon": "res/images/icon.png",
@@ -51,6 +67,11 @@
           "type": "boolean",
           "default": false,
           "description": "开启调试模式，会在 DEBUG CONSOLE 输出很多信息；修改了此配置需要重启编辑器才能生效"
+        },
+        "dot-template.commandInvalidTimeout": {
+          "type": "number",
+          "default": 60000,
+          "description": "设置命令的有效时间，过期后就无法撤销或重新执行，单位毫秒"
         },
         "dot-template.dtplFolderName": {
           "type": "string",
@@ -127,12 +148,12 @@
         "title": "DTPL: Create template files"
       },
       {
-        "command": "extension.createRelatedFile",
-        "title": "DTPL: Create related file"
+        "command": "extension.createRelatedFiles",
+        "title": "DTPL: Create related files"
       },
       {
-        "command": "extension.rollbackCreates",
-        "title": "DTPL: Rollback or recover created files"
+        "command": "extension.undoOrRedo",
+        "title": "DTPL: Undo or Redo created files"
       }
     ],
     "keybindings": [
@@ -142,12 +163,12 @@
         "mac": "cmd+k cmd+p"
       },
       {
-        "command": "extension.createRelatedFile",
+        "command": "extension.createRelatedFiles",
         "key": "ctrl+k ctrl+s",
         "mac": "cmd+k cmd+s"
       },
       {
-        "command": "extension.rollbackCreates",
+        "command": "extension.undoOrRedo",
         "key": "ctrl+k ctrl+u",
         "mac": "cmd+k cmd+u"
       }
@@ -174,19 +195,24 @@
     ]
   },
   "devDependencies": {
+    "@types/ejs": "~2.3.33",
     "@types/fs-extra": "~4.0.2",
+    "@types/inquirer": "~0.0.35",
     "@types/minimatch": "~3.0.1",
     "@types/mocha": "^2.2.42",
-    "@types/ejs": "~2.3.33",
     "@types/node": "^7.0.43",
+    "mocha": "~4.0.1",
+    "nyc": "~11.2.1",
     "typescript": "^2.5.3",
     "vscode": "^1.1.5"
   },
   "dependencies": {
     "ejs": "~2.5.7",
     "fs-extra": "~4.0.2",
+    "inquirer": "~3.3.0",
     "minimatch": "~3.0.4",
-    "mora-scripts": "~1.6.8",
+    "mora-scripts": "^1.6.12",
+    "nunjucks": "~3.0.1",
     "ts-node": "~3.3.0",
     "tslib": "~1.8.0"
   }
