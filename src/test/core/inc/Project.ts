@@ -104,12 +104,13 @@ export class Project {
     assert(!this.editor.isOpened(this.fullPath(file)), `file ${file} should not opened`)
   }
 
-  fileShouldMatch(file: string, match: RegExp | string) {
-    let content = this.getFileContent(file).trim()
+  fileShouldMatch(file: string, match: RegExp | string, exact?: boolean) {
+    let content = this.getFileContent(file)
+    if (!exact) content = content.trim()
     if (typeof match === 'string') {
-      assert.equal(content, match, `file ${file} content not match ${match}`)
+      assert.equal(content, match, `file ${file} content ${JSON.stringify(content)} not match ${JSON.stringify(match)}`)
     } else {
-      assert(match.test(content), `file ${file} content not match ${match}`)
+      assert(match.test(content), `file ${file} content ${JSON.stringify(content)} not match ${match}`)
     }
   }
 
@@ -122,6 +123,12 @@ export class Project {
 
   async createRelatedFilesAsync(file: string, result: boolean) {
     let res = await this.app.createRelatedFiles(this.fullPath(file))
+    assert.equal(res, result, 'createRelatedFiles result not match')
+  }
+
+  async createDirectoriesAsync(files: string | string[], result: boolean) {
+    files = Array.isArray(files) ? files : [files]
+    let res = await this.app.createDirectories(files.map(f => this.fullPath(f)))
     assert.equal(res, result, 'createRelatedFiles result not match')
   }
 

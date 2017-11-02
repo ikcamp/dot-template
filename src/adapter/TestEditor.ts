@@ -1,6 +1,7 @@
 import {Editor} from '../core/Editor'
 
 export class TestEditor extends Editor {
+  EOL = '\n'
   constructor(rootPath: string, public output: boolean) {
     super(rootPath)
     this.configuration.debug = true

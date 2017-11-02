@@ -11,6 +11,10 @@ export class File {
     await this.pro.createRelatedFilesAsync(this.name, result)
   }
 
+  async createDirectories(result: boolean) {
+    await this.pro.createDirectoriesAsync(this.name, result)
+  }
+
   dir() {
     fs.ensureDirSync(this.pro.fullPath(this.name))
   }
@@ -52,7 +56,7 @@ export class File {
     this.pro.fileShouldNotOpened(this.name)
   }
 
-  shouldMatch(match: RegExp | string) {
-    this.pro.fileShouldMatch(this.name, match)
+  shouldMatch(match: RegExp | string, exact?: boolean) {
+    this.pro.fileShouldMatch(this.name, match, exact)
   }
 }

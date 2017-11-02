@@ -10,31 +10,18 @@ export class CreateDirectoriesCommand extends Command {
   constructor(folders: string[], app: Application, options: ICommandInitOptions) {
     super('CreateDirectoriesCommand', app, options)
 
-    let {rootPath} = this.app.editor
-    folders = folders
-      .map(f => f.trim() ? path.resolve(rootPath, f) : '')
-      .filter(f => {
-        if (!f || f.indexOf(rootPath) < 0) return false // 文件必须要在项目文件夹内
-
-        // 文件不存在或者目录文件内无其它文件
-        return !fs.existsSync(f) || fs.statSync(f).isDirectory() && fs.readdirSync(f).length === 0
-      })
-      .reduce((all: string[], f) => { // 去重
-        if (all.indexOf(f) < 0) all.push(f)
-        return all
-      }, [])
-
     let templates: Template[] = []
 
-    folders.forEach(f => {
+    this.filter(folders, true).forEach(f => {
       let template = this.app.createSource(f).match(true)
       if (template) templates.push(template)
     })
 
-    if (!templates.length) {
-      this.invalid = true
-    } else {
+    if (templates.length) {
       this.templates = templates
+    } else {
+      this.invalid = true
+      this.app.error('无任何可创建的有效文件夹：文件路径需要在项目内，并且文件夹需要不存在，或文件夹内无任何文件')
     }
   }
 

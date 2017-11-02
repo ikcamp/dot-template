@@ -1,6 +1,7 @@
 import {Application} from '../Application'
 import * as fs from 'fs-extra'
 import * as path from 'path'
+import {unique} from '../common'
 
 export interface ICommandInitOptions {
   /**
@@ -57,12 +58,39 @@ export abstract class Command {
     this.app.debug(`<${this.name}> ${message}`, ...files)
   }
 
+  /**
+   * 对文本文件或文件夹过滤，需要文件为空
+   *
+   * 文本文件为空： 文件不存在，或者文件内容为空
+   * 文件夹为空：   文件不存在，或者文件夹内无其它文件
+   *
+   * @param filePaths   相对于根目录的文件路径
+   * @param isDirectory 是要过滤文本文件还是目录
+   */
+  protected filter(filePaths: string[], isDirectory: boolean) {
+    const {rootPath, editor} = this.app
+
+    let isFileEmpty = (file: string) => !fs.existsSync(file) || fs.statSync(file).isFile() && editor.getFileContent(file).trim() === ''
+    let isDirEmpty = (file: string) => !fs.existsSync(file) || fs.statSync(file).isDirectory() && fs.readdirSync(file).length === 0
+
+    filePaths = filePaths
+      .filter(f => !!f)
+      .map(f => path.resolve(rootPath, f))
+      .filter(f => {
+        // 文件必须要在项目文件夹内，并且需要为空
+        return f.indexOf(rootPath) === 0 && (isDirectory ? isDirEmpty(f) : isFileEmpty(f))
+      })
+
+    return unique(filePaths)
+  }
+
   protected async createFileAsync(file: string, content: string) {
     fs.ensureDirSync(path.dirname(file))
     fs.writeFileSync(file, content)
     this.app.emitCreatedFile(file, content)
   }
   protected async setFileContentAsync(file: string, newContent: string, oldContent: string): Promise<boolean> {
+    if (newContent === oldContent) return true
     let {app} = this
     if (await app.editor.setFileContentAsync(file, newContent) === false) {
       app.error(app.format('设置文件 %f 内容失败', file))
@@ -86,11 +114,11 @@ export abstract class Command {
    * @readonly
    * @type {boolean}
    */
-  get runnable(): boolean {
-    let {options: {timeout}, lastRunTimestamp} = this
-    let now = Date.now()
-    return !(timeout && timeout > 0 && lastRunTimestamp && now - lastRunTimestamp > timeout)
-  }
+  // get runnable(): boolean {
+  //   let {options: {timeout}, lastRunTimestamp} = this
+  //   let now = Date.now()
+  //   return !(timeout && timeout > 0 && lastRunTimestamp && now - lastRunTimestamp > timeout)
+  // }
 
   /**
    * 运行命令

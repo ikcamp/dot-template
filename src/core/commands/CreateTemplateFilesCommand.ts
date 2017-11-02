@@ -2,7 +2,6 @@ import {Command, ICommandInitOptions} from './Command'
 import {Application} from '../Application'
 import {series} from '../common'
 import * as fs from 'fs-extra'
-import * as path from 'path'
 
 /**
  * 创建文件并注入模板的命令
@@ -29,24 +28,13 @@ export class CreateTemplateFilesCommand extends Command {
   constructor(files: string[], private open: boolean, app: Application, options: ICommandInitOptions) {
     super('CreateTemplateFilesCommand', app, options)
 
-    let {editor} = this.app
-    let {rootPath} = editor
-    files = files
-      .map(f => f.trim() ? path.resolve(rootPath, f) : '')
-      .filter(f => {
-        if (!f || f.indexOf(rootPath) < 0) return false // 文件必须要在项目文件夹内
+    files = this.filter(files, false)
 
-        // 文件不存在，或者文本文件内容为空
-        return !fs.existsSync(f) || fs.statSync(f).isFile() && editor.getFileContent(f).trim() === ''
-      })
-      .reduce((all: string[], f) => { // 去重
-        if (all.indexOf(f) < 0) all.push(f)
-        return all
-      }, [])
-    if (!files.length) {
-      this.invalid = true
-    } else {
+    if (files.length) {
       this.files = files
+    } else {
+      this.invalid = true
+      this.app.error('无任何可创建的有效文件：文件路径需要在项目内，并且文件需要不存在，或文件内容为空')
     }
   }
 
@@ -73,7 +61,7 @@ export class CreateTemplateFilesCommand extends Command {
 
       this.infos.push({content, exists, opened, newContent})
 
-      if (newContent !== content && await this.setFileContentAsync(file, newContent, content) === false) return false
+      await this.setFileContentAsync(file, newContent, content)
 
       if (this.open && !opened) await editor.openFileAsync(file) // 文件打开失败不算错误
       this.debug('处理文件 %f 成功', file)
@@ -107,9 +95,7 @@ export class CreateTemplateFilesCommand extends Command {
       if (fs.existsSync(file)) {
         let currentContent = editor.getFileContent(file)
         if (info.exists) {
-          if (info.content !== currentContent && await this.setFileContentAsync(file, info.content, currentContent) === false) {
-            return false
-          }
+          await this.setFileContentAsync(file, info.content, currentContent)
         } else {
           await this.unlinkFileAsync(file, currentContent)
         }
@@ -119,10 +105,7 @@ export class CreateTemplateFilesCommand extends Command {
         }
       }
 
-      if (info.exists && info.opened) {
-        if (!editor.isOpened(file)) await editor.openFileAsync(file)
-      }
-
+      if (info.exists && info.opened && !editor.isOpened(file)) await editor.openFileAsync(file)
       this.debug('回滚文件 %f 成功', file)
       return true
     })

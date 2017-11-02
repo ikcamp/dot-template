@@ -1,6 +1,4 @@
-/* istanbul ignore next */
 let requireTsFileEnabled = false
-/* istanbul ignore next */
 export function enableRequireTsFile() {
   if (requireTsFileEnabled) return
   require('ts-node/register')
@@ -34,3 +32,16 @@ export async function series<T, R>(tasks: T[], run: (task: T, index: number, tas
   return result
 }
 
+/**
+ * 对数组去重
+ */
+export function unique<T, K extends keyof T>(items: T[], uniqueKey?: K) {
+  return items.reduce((result: T[], item) => {
+    if (uniqueKey) {
+      if (result.every(_ => _[uniqueKey] !== item[uniqueKey])) result.push(item)
+    } else {
+      if (result.indexOf(item) < 0) result.push(item)
+    }
+    return result
+  }, [])
+}

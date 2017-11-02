@@ -91,21 +91,22 @@ describe('createFiles with template', () => {
     f.shouldOpened()
     await f.create(true)
   })
-  it('should return false when setFileContent=false and file is opened', async () => {
+  it('should return true when setFileContent=false and file is opened, but content not update', async () => {
     pro.editor.returnWhenSetFileContent = false
     let f = new File('upper', pro)
     f.write('')
     await f.openAsync()
     f.shouldOpened()
-    await f.create(false)
+    await f.create(true)
     f.shouldMatch('')
   })
-  it('should return false when setFileContent=false and file is not opened', async () => {
+  it('should return true when setFileContent=false and file is not opened, but content not update', async () => {
     pro.editor.returnWhenSetFileContent = false
     let f = new File('upper', pro)
     f.write('')
     f.shouldNotOpened()
-    await f.create(false)
+    await f.create(true)
+    f.shouldMatch('')
   })
 })
 
@@ -218,7 +219,7 @@ describe('undo & redo createFiles', () => {
   it('should report error when setFileContent error in undo', async () => {
     let f = await createFile('upperj', '', true)
     pro.editor.returnWhenSetFileContent = false
-    await pro.unredoAsync(false)
+    await pro.unredoAsync(true)
     assert.equal(pro.editor.test_errors.length, 1)
     f.shouldMatch('UPPERJ')
   })

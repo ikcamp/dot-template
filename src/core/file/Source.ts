@@ -3,7 +3,7 @@ import * as minimatch from 'minimatch'
 import * as fs from 'fs-extra'
 import {Template} from './Template'
 import {Application} from '../Application'
-import {enableRequireTsFile, transformer, IBasicData, IData, IConfig, IUserTemplate} from '../common'
+import {enableRequireTsFile, transformer, IBasicData, IData, IDtplConfig, IUserTemplate} from '../common'
 
 export class Source {
   private _basicData: IBasicData
@@ -94,7 +94,7 @@ export class Source {
     for (let dtplFolder of dtplFolders) {
       if (fs.existsSync(dtplFolder)) {
         let configFile = this.findConfigFileInDtplFolder(dtplFolder)
-        let config = configFile ? this.loadDtplConfigFile(configFile) : null
+        let config = configFile ? this.loadDtplConfig(configFile) : null
         if (config) {
           let userTemplate = this.findMatchedUserTemplate(dtplFolder, isTemplateDirectory, config)
 
@@ -102,10 +102,7 @@ export class Source {
             const templatePath = path.resolve(dtplFolder, userTemplate.name)
             this.app.debug(`找到匹配的模板 %f`, templatePath)
 
-            let locals = config.getLocalData ? this.app.runUserFunction('getLocalData', config.getLocalData, [userTemplate, this], config) : null
-            if (!locals && typeof locals !== 'object') locals = {}
-
-            return this.createTemplate(templatePath, {...this.basicData, ...locals, ...(userTemplate.data || {})}, userTemplate)
+            return this.createTemplate(templatePath, {...this.basicData, ...(config.globalData || {}), ...(userTemplate.data || {})}, userTemplate)
           }
         }
       }
@@ -118,11 +115,10 @@ export class Source {
   /**
    * 根据用户的配置，查找一个匹配的并且存在的模板文件
    */
-  private findMatchedUserTemplate(dtplFolder: string, isTemplateDirectory: boolean, config: IConfig): IUserTemplate | undefined {
-    let templates = this.app.runUserFunction('getTemplates', config.getTemplates, [this], config) || []
+  private findMatchedUserTemplate(dtplFolder: string, isTemplateDirectory: boolean, config: IDtplConfig): IUserTemplate | undefined {
     let defaultMinimatchOptions = this.app.editor.configuration.minimatchOptions
 
-    return templates.find(t => {
+    return config.templates.find(t => {
       let matches = Array.isArray(t.matches) ? t.matches : [t.matches]
       return !!matches.find(m => {
         let result: boolean = false
@@ -133,7 +129,7 @@ export class Source {
             result = minimatch(this.relativeFilePath, m, typeof t.minimatch !== 'object' ? defaultMinimatchOptions : t.minimatch)
           }
         } else if (typeof m === 'function') {
-          result = !!this.app.runUserFunction('template.match', m, [minimatch], t)
+          result = !!this.app.runUserFunction('template.match', m, [minimatch, this], t)
         }
 
         if (result) {
@@ -156,17 +152,20 @@ export class Source {
   /**
    * 加载配置文件，每次都重新加载，确保无缓存
    */
-  private loadDtplConfigFile(configFile: string): IConfig | null {
+  private loadDtplConfig(configFile: string): IDtplConfig | undefined {
     if (configFile.endsWith('.ts')) enableRequireTsFile()
     delete require.cache[require.resolve(configFile)]
-    let mod: IConfig = require(configFile)
-
-    if (!mod.getTemplates) {
-      this.app.warning(`配置文件 %f 需要导出 getTemplates 函数`, configFile)
-      return null
+    let mod: any = require(configFile)
+    let config: IDtplConfig | undefined
+    if (mod) {
+      let fn = typeof mod.default === 'function' ? mod.default : mod
+      if (typeof fn === 'function') config = this.app.runUserFunction('dtpl config', fn, [this])
     }
 
-    return mod
+    if (config && (!config.templates || !Array.isArray(config.templates))) {
+      this.app.warning(`配置文件 %f 没有返回 templates 数组`, configFile)
+    }
+    return config
   }
 
   /**

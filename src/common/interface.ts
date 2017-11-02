@@ -113,7 +113,7 @@ export interface IRelated {
    *
    * 表示自动在当前编辑的文件的第 row 行插入 reference 指定的字符串
    */
-  reference?: string | undefined
+  reference?: string
 
   /**
    * 插入 reference 起始坐标
@@ -124,7 +124,7 @@ export interface IRelated {
   begin?: {row: number, col?: number}
 
   /**
-   * 插入 reference 结束坐标
+   * 插入 reference 结束坐标（不包含在内）
    *
    * - 如果不设置 end，则默认和 from 一样，即完全会插入 reference 在 begin 坐标
    * - 如果设置了 end，则 begin - end 之间的数据全会被 reference 替换了
@@ -141,9 +141,9 @@ export interface IRelated {
   smartInsertStyle?: boolean
 }
 
-export interface IConfig {
-  getTemplates(source: Source): IUserTemplate[]
-  getLocalData?(template: IUserTemplate, source: Source): IObject
+export interface IDtplConfig {
+  templates: IUserTemplate[]
+  globalData?: IObject
 }
 
 export interface IUserTemplate {
@@ -213,7 +213,7 @@ export interface IUserTemplate {
   /**
    * 匹配函数或 minimatch 的 pattern
    */
-  matches: string | ((minimatch: IMinimatchFunction) => boolean) | Array<string | ((minimatch: IMinimatchFunction) => boolean)>
+  matches: string | ((minimatch: IMinimatchFunction, source: Source) => boolean) | Array<string | ((minimatch: IMinimatchFunction, source: Source) => boolean)>
 
   /**
    * 是否使用 minimatch 去匹配 matches 中的字符串
