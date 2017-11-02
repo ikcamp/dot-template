@@ -60,7 +60,6 @@ export class Render {
   }
 
   renderNjkContent(content: string, data: IObject): string {
-    require('nunjucks').renderString(content, data)
-    return content
+    return require('nunjucks').renderString(content, data)
   }
 }

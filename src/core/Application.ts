@@ -30,6 +30,7 @@ export class Application {
       let folders: string[] = []
 
       newFiles.forEach((f, i) => {
+        // 文件必须要存在，要不然不知道是文件还是目录
         if (fs.existsSync(f)) {
           let stats = fs.statSync(f)
           if (stats.isFile()) {
@@ -41,12 +42,13 @@ export class Application {
         }
       })
       newFiles.length = 0
+
       if (isFirstFile) {
-        this.createTemplateFiles(files, true)
-        this.createDirectories(folders)
+        files.length && this.createTemplateFiles(files, true)
+        folders.length && this.createDirectories(folders)
       } else {
-        this.createDirectories(folders)
-        this.createTemplateFiles(files, true)
+        folders.length && this.createDirectories(folders)
+        files.length && this.createTemplateFiles(files, true)
       }
     }
 
@@ -54,10 +56,10 @@ export class Application {
       // 执行命令时会创建新文件，会被检测到，要忽略它
       if (this.cmder.fileMaybeCreatedByCommand()) return
 
-      this.debug('监听到新建了文件 %f' + filePath)
+      this.debug('监听到新建了文件 %f', filePath)
       if (sid) clearTimeout(sid)
       newFiles.push(filePath)
-      sid = setTimeout(run, 400)
+      sid = setTimeout(run, 300) // 再等待会儿，批量处理
     })
 
     this.debug('Application rootPath ' + this.rootPath)
@@ -122,6 +124,7 @@ export class Application {
     this.editor.error(message, e)
   }
 
+  /* istanbul ignore next */
   dispose() {
     this.editor.dispose()
     this.editor.debug('Application destroied')

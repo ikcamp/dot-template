@@ -4,14 +4,15 @@ import * as path from 'path'
 import {Command, ICommandInitOptions} from './Command'
 import {Application} from '../Application'
 import {Template} from '../file/'
+import {series} from '../common'
 
 export class CreateDirectoriesCommand extends Command {
   private templates: Template[]
+  private exists: boolean[] = []
+
   constructor(folders: string[], app: Application, options: ICommandInitOptions) {
     super('CreateDirectoriesCommand', app, options)
-
     let templates: Template[] = []
-
     this.filter(folders, true).forEach(f => {
       let template = this.app.createSource(f).match(true)
       if (template) templates.push(template)
@@ -28,8 +29,7 @@ export class CreateDirectoriesCommand extends Command {
   async execute(): Promise<boolean> {
     let {app} = this
     let {render, editor} = app
-
-    for (let tpl of this.templates) {
+    await series(this.templates, async (tpl) => {
       let fromDir = tpl.filePath
       let toDir = tpl.source.filePath
 
@@ -37,7 +37,11 @@ export class CreateDirectoriesCommand extends Command {
       let copiedFolders: string[] = []
 
       this.debug('开始复制目录 %f => %f', fromDir, toDir)
-      walk(fromDir, (rawName: string, fromPath: string, stats: fs.Stats) => {
+      let exists = fs.existsSync(toDir)
+      if (!exists) fs.mkdirpSync(toDir)
+      this.exists.push(exists)
+
+      await walk(fromDir, async (rawName: string, fromPath: string, stats: fs.Stats) => {
         let relativePath = path.relative(fromDir, fromPath)
 
         let sourceData = tpl.data
@@ -68,13 +72,16 @@ export class CreateDirectoriesCommand extends Command {
           }
         }
 
-        if (fromPath === toPath || toPath.indexOf(fromDir) === 0) return false
+        if (fromPath === toPath || toPath.indexOf(fromDir) === 0) {
+          this.app.error(this.app.format('新生成的文件 %f 不能在源文件夹内 %f，已忽略', toPath, fromDir))
+          return false
+        }
 
         if (stats.isDirectory()) {
           fs.ensureDirSync(toPath)
           copiedFolders.push(toPath)
         } else if (stats.isFile()) {
-          this.createFileAsync(toPath, content)
+          await this.createFileAsync(toPath, content)
           copiedFiles.push(toPath)
         }
         this.debug('复制文件 %f => %f', fromPath, toPath)
@@ -83,31 +90,37 @@ export class CreateDirectoriesCommand extends Command {
 
       tpl.afterFilter(fromDir, toDir, {files: copiedFiles, folders: copiedFolders})
       this.debug('目录复制完成')
-    }
+    })
 
     return true
   }
 
   async rollback(): Promise<boolean> {
-
-    for (let tpl of this.templates) {
+    await series(this.templates, async (tpl, index) => {
       let toDir = tpl.source.filePath
       this.debug('删除目录 %f 的文件', toDir)
-      fs.readdirSync(toDir).forEach(f => {
-        f = path.join(toDir, f)
-        if (fs.statSync(f).isDirectory()) fs.removeSync(f)
-        else fs.unlinkSync(f)
-      })
-    }
-
-
+      await this.remove(toDir, !this.exists[index])
+    })
     return true
   }
 
+  async remove(dir: string, removeCurrent: boolean = false) {
+    let names = fs.readdirSync(dir)
+    await series(names, async (name) => {
+      let f = path.join(dir, name)
+      let stats = fs.statSync(f)
+      if (stats.isDirectory()) {
+        await this.remove(f, true)
+      } else {
+        await this.unlinkFileAsync(f, this.app.editor.getFileContent(f))
+      }
+    })
+    if (removeCurrent) fs.removeSync(dir)
+  }
 }
 
 
-function walk(dir: string, fn: (name: string, filePath: string, stats: fs.Stats) => boolean) {
+async function walk(dir: string, fn: (name: string, filePath: string, stats: fs.Stats) => Promise<boolean>) {
   let names = fs.readdirSync(dir)
   let filePath: string
   let stats: fs.Stats
@@ -115,8 +128,8 @@ function walk(dir: string, fn: (name: string, filePath: string, stats: fs.Stats)
   for (let name of names) {
     filePath = path.join(dir, name)
     stats = fs.statSync(filePath)
-    if (true === fn(name, filePath, stats) && stats.isDirectory()) {
-      walk(filePath, fn)
+    if (true === await fn(name, filePath, stats) && stats.isDirectory()) {
+      await walk(filePath, fn)
     }
   }
 }

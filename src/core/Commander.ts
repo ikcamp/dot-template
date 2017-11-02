@@ -55,7 +55,7 @@ export class Commander {
     } catch (e) {
       this.isRunning = false
       if (e instanceof Error) {
-        e.message = `执行命令 ${command.name} 是出错: ${e.message}`
+        e.message = `执行命令 ${command.name} 出错: ${e.message}`
       }
       throw e
     }

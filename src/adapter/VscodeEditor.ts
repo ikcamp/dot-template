@@ -144,7 +144,7 @@ export class VscodeEditor extends Editor {
     vscode.window.showWarningMessage(`[dtpl] ${message}`)
   }
   info(message: string) {
-    vscode.window.showInformationMessage(message)
+    vscode.window.showInformationMessage(`[dtpl] ${message}`)
   }
   error(message: string, e?: Error | any) {
     vscode.window.showErrorMessage(`[dtpl] ${message} （打开输出面板可以看到消息信息）`)

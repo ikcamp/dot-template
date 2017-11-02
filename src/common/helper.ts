@@ -1,3 +1,5 @@
+import * as path from 'path'
+
 let requireTsFileEnabled = false
 export function enableRequireTsFile() {
   if (requireTsFileEnabled) return
@@ -44,4 +46,42 @@ export function unique<T, K extends keyof T>(items: T[], uniqueKey?: K) {
     }
     return result
   }, [])
+}
+
+
+const importOrExportRegexp = /^\s*(?:import|export)\s+.*?\s+from\s+['"]([^'"]+)['"]/mg
+const requireRegExp = /^\s*(?:var|let|const|import)\s+\w+\s+=\s+require\(['"]([^'"]+)['"]\)/mg
+
+/**
+ * 查找 js 文件中引用的其它文件，一般是通过 require 或 import 语法来引用的
+ *
+ * 如：
+ *
+ * ```
+ *  import Test from './Test'
+ *  export * from './Test'
+ *  const Test = require('./Test')
+ *  import Test = require('./Test')
+ * ```
+ */
+export function findJsRelatedFiles(jsfile: string, fileContent: string): string[] {
+  let result: string[] = []
+
+  let add = (from: string): string => {
+    // 一定要是相对目录
+    if (from[0] === '.') {
+      let file = path.resolve(path.dirname(jsfile), from)
+
+      // 如果没有后缀，要加上当前文件的后缀
+      if (!(/\.\w+$/.test(file))) file += path.extname(jsfile)
+
+      if (result.indexOf(file) < 0) result.push(file)
+    }
+    return ''
+  }
+
+  fileContent.replace(importOrExportRegexp, (raw, from) => add(from))
+  fileContent.replace(requireRegExp, (raw, from) => add(from))
+
+  return result
 }

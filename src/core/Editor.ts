@@ -1,7 +1,9 @@
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import * as os from 'os'
-import * as  error from 'mora-scripts/libs/sys/error'
+import * as error from 'mora-scripts/libs/sys/error'
+import * as warn from 'mora-scripts/libs/sys/warn'
+import * as info from 'mora-scripts/libs/sys/info'
 import {IMinimatchOptions} from './common'
 import {Application} from './Application'
 
@@ -106,15 +108,19 @@ export abstract class Editor {
     return false
   }
 
+  /* istanbul ignore next */
   debug(message: string) {
     console.log('[dtpl] ' + message)
   }
+  /* istanbul ignore next */
   info(message: string) {
-    console.info('[dtpl] ' + message)
+    info('[dtpl] ' + message)
   }
+  /* istanbul ignore next */
   warning(message: string) {
-    console.warn('[dtpl] ' + message)
+    warn('[dtpl] ' + message)
   }
+  /* istanbul ignore next */
   error(message: string, e?: any) {
     error(message)
     if (e) console.error(e)

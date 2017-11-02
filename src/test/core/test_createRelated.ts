@@ -49,7 +49,7 @@ describe('createRelated execute & event', () => {
     f1.shouldMatch('no-inject content')
     f2.shouldMatch('')
 
-    pro.matchListens(3, [{type: 'createdFile'}, {type: 'updatedFile'}, {type: 'createdFile'}])
+    await pro.matchListens(3, [{type: 'createdFile'}, {type: 'updatedFile'}, {type: 'createdFile'}])
   })
 
   it('inject-start', async () => {
@@ -153,7 +153,7 @@ describe('createRelated rollback', () => {
 
     await pro.unredoAsync(true)
 
-    pro.matchListens(5, [{type: 'createdFile'}, {type: 'updatedFile'}, {type: 'createdFile'}, {type: 'deletedFile'}, {type: 'deletedFile'}])
+    await pro.matchListens(5, [{type: 'createdFile'}, {type: 'updatedFile'}, {type: 'createdFile'}, {type: 'deletedFile'}, {type: 'deletedFile'}])
   })
 
   it('related files should not be revoke if it was deleted', async () => {
@@ -167,7 +167,7 @@ describe('createRelated rollback', () => {
 
     await pro.unredoAsync(true)
 
-    pro.matchListens(4, [{type: 'createdFile'}, {type: 'updatedFile'}, {type: 'createdFile'}, {type: 'deletedFile'}])
+    await pro.matchListens(4, [{type: 'createdFile'}, {type: 'updatedFile'}, {type: 'createdFile'}, {type: 'deletedFile'}])
   })
 
   it('revoke inject-start', async () => {
@@ -190,3 +190,4 @@ describe('createRelated rollback', () => {
     s.shouldNotExists()
   })
 })
+

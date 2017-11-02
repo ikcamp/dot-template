@@ -2,6 +2,7 @@ import * as path from 'path'
 import * as _ from '../common/interface'
 
 export default function(source: _.Source): _.IDtplConfig {
+
   return {
     templates: [
       {
@@ -10,11 +11,11 @@ export default function(source: _.Source): _.IDtplConfig {
         name: '../../res/template',
 
         data: {
-          interface: path.resolve(__dirname, '..', '..', 'out', 'core', 'common', 'interface')
+          interface: path.resolve(source.app.dotTemplateRootPath, 'out', 'common', 'interface')
         },
 
         // 根据用户当前正在创建或编辑的文件的信息来判断是否需要使用此模板来处理此文件
-        matches: () => {
+        matches: (minimatch, source) => {
           let {isDirectory, filePath} = source
           return isDirectory && path.basename(filePath) === source.app.editor.configuration.dtplFolderName
         },

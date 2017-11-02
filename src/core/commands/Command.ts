@@ -15,7 +15,7 @@ export interface ICommandInitOptions {
  */
 export class CommandTimeoutError extends Error {
   constructor(command: Command, expiredSeconds: number) {
-    super(`${command.name} 已经过期 ${expiredSeconds}s 了，无法再 ${command.status === CommandStatus.INITED ? '执行' : '回滚'}`)
+    super(`命令已经过期 ${expiredSeconds}s 了，无法再 ${command.status === CommandStatus.INITED ? '执行' : '回滚'}`)
   }
 }
 

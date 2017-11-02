@@ -10,3 +10,4 @@ tsconfig.json
 wallaby.js
 vsc-extension-quickstart.md
 yarn.lock
+coverage/

@@ -22,6 +22,14 @@ export default function(source: _.Source): _.IDtplConfig {
       {
         name: 'text.txt',
         matches: ['text*']
+      },
+      {
+        name: 'folder',
+        matches: 'folder*'
+      },
+      {
+        name: 'not-exists-file',
+        matches: 'noexists*'
       }
     ]
   }

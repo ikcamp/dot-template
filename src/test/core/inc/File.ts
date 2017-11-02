@@ -15,6 +15,10 @@ export class File {
     await this.pro.createDirectoriesAsync(this.name, result)
   }
 
+  get path() {
+    return this.pro.fullPath(this.name)
+  }
+
   dir() {
     fs.ensureDirSync(this.pro.fullPath(this.name))
   }

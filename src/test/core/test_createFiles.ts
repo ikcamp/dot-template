@@ -108,6 +108,16 @@ describe('createFiles with template', () => {
     await f.create(true)
     f.shouldMatch('')
   })
+  it('should warning when template is not exists', async () => {
+    let f = await createFile('noexistsxxx', true)
+    f.shouldMatch('')
+    assert(pro.editor.test_warnings.length === 1)
+  })
+  it('should warning when is file but template is directory', async () => {
+    let f = await createFile('folder-xx', '', true)
+    f.shouldMatch('')
+    assert.equal(pro.editor.test_warnings.length, 1)
+  })
 })
 
 describe('createFiles events', () => {

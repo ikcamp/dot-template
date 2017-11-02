@@ -89,20 +89,27 @@ export class Source {
       dtplFolders = dtplFolders.filter(f => f.indexOf(this.filePath) !== 0)
     }
 
-    dtplFolders.push(path.join(this.app.dotTemplateRootPath, 'res', '.dtpl')) // dtpl 一定会使用的 .dtpl 目录
-
+    dtplFolders.push(path.join(this.app.dotTemplateRootPath, 'out', 'config')) // dtpl 一定会使用的 .dtpl 目录
     for (let dtplFolder of dtplFolders) {
       if (fs.existsSync(dtplFolder)) {
         let configFile = this.findConfigFileInDtplFolder(dtplFolder)
-        let config = configFile ? this.loadDtplConfig(configFile) : null
+        let config: IDtplConfig | undefined
+
+        if (configFile) {
+          this.app.debug('找到配置文件 %f', configFile)
+          config = this.loadDtplConfig(configFile)
+        }
+
         if (config) {
           let userTemplate = this.findMatchedUserTemplate(dtplFolder, isTemplateDirectory, config)
 
           if (userTemplate) {
             const templatePath = path.resolve(dtplFolder, userTemplate.name)
-            this.app.debug(`找到匹配的模板 %f`, templatePath)
+            this.app.debug(`找到匹配的模板文件 %f`, templatePath)
 
             return this.createTemplate(templatePath, {...this.basicData, ...(config.globalData || {}), ...(userTemplate.data || {})}, userTemplate)
+          } else {
+            this.app.debug('配置文件 %f 中没有匹配的模板', configFile as string)
           }
         }
       }
@@ -135,15 +142,18 @@ export class Source {
         if (result) {
           let templatePath = path.resolve(dtplFolder, t.name)
           if (!fs.existsSync(templatePath)) {
-            this.app.warning(`匹配到的模板文件 %f 不存在，已忽略`, templatePath)
+            this.app.warning(`模板 ${t.name} 对应的文件 %f 不存在，已忽略`, templatePath)
             result = false
           } else {
             let stats = fs.statSync(templatePath)
             if (stats.isFile() && isTemplateDirectory || stats.isDirectory() && !isTemplateDirectory) {
+              this.app.warning(`模板 ${t.name} 对应的文件 %f ${isTemplateDirectory ? '应该是目录' : '不应该是目录'}`, templatePath)
               result = false
             }
           }
         }
+
+        this.app.debug(`模板 ${t.name} 匹配${result ? '' : '不'}成功，matches: ${t.matches}`)
         return result
       })
     })
