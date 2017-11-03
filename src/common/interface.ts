@@ -235,37 +235,37 @@ export type IData = IBasicData | IBasicData & IObject
 export interface IBasicData {
   /*# INJECT_START basicData #*/
   /**
-   * 项目根目录路径
+   * 项目根目录的绝对路径
    * @type {string}
    */
   rootPath: string
   /**
-   * node_modules 目录路径
+   * 项目下的 node_modules 目录的绝对路径
    * @type {string}
    */
   npmPath: string
   /**
-   * 当前日期
+   * 当前日期，格式：yyyy-mm-dd
    * @type {string}
    */
   date: string
   /**
-   * 当前时间
+   * 当前时间，格式: hh-mm
    * @type {string}
    */
   time: string
   /**
-   * 当前日期与时间
+   * 当前日期和时间，格式：yyyy-mm-dd hh-mm
    * @type {string}
    */
   datetime: string
   /**
-   * 系统用户，读取环境变量中的 HOME
+   * 当前用户，通过读取环境变量中的 USER 字段而获取到的
    * @type {string}
    */
   user: string
   /**
-   * 项目根目录上的 package.json 文件的内容
+   * 当前项目的 package.json 所对应的 JSON 对象
    * @type {{[key: string]: any}}
    */
   pkg: {[key: string]: any}
@@ -275,7 +275,7 @@ export interface IBasicData {
    */
   filePath: string
   /**
-   * 当前文件相对根目录的路径
+   * 当前文件相对于根目录的路径
    * @type {string}
    */
   relativeFilePath: string
@@ -285,42 +285,42 @@ export interface IBasicData {
    */
   fileName: string
   /**
-   * 当前文件的后缀
+   * 当前文件的后缀名
    * @type {string}
    */
   fileExt: string
   /**
-   * 当前文件的目录的绝对路径
+   * 当前文件所在的目录的绝对路径
    * @type {string}
    */
   dirPath: string
   /**
-   * 当前文件的目录的名称
+   * 当前文件所在的目录的名称
    * @type {string}
    */
   dirName: string
   /**
-   * 和 fileName 一样
+   * fileName 的别名，即当前文件的名称（不含后缀）
    * @type {string}
    */
   rawModuleName: string
   /**
-   * fileName 的驼峰形式
+   * 驼峰形式的 fileName
    * @type {string}
    */
   moduleName: string
   /**
-   * fileName 中的每个单词首字母都大写
+   * 单词首字母都大写的形式的 fileName
    * @type {string}
    */
   ModuleName: string
   /**
-   * fileName 中所有字母都大写，并用下划线连接
+   * 所有字母都大写，中间以下划线连接的 fileName
    * @type {string}
    */
   MODULE_NAME: string
   /**
-   * fileName 中所有字母都小写，并用下划线连接
+   * 所有字母都小写，中间以下划线连接的 fileName
    * @type {string}
    */
   module_name: string

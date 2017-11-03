@@ -13,6 +13,7 @@ const packagePath = findup.pkg(__dirname)
 const rootPath = path.dirname(packagePath)
 const readmePath = path.join(rootPath, 'README.md')
 const interfacePath = path.join(rootPath, 'src', 'common', 'interface.ts')
+const dataPath = path.join(rootPath, 'src', 'common', 'data.ts')
 
 interface IConfig {
   name: string
@@ -20,17 +21,17 @@ interface IConfig {
   commands: {[key: string]: {title: string, key?: string, mac?: string}}
   options: {[key: string]: {default?: any, type: string, description: string}}
 }
-const config: IConfig = require('./src/common/config.json')
+const config: IConfig = require('./config/config.json')
 
 cli({
   usage: './bin [options] <command>'
 })
 .commands({
   inject: {
-    desc: xlog.format('根据 %csrc/common/config.json%c 文件的配置，给项目其它地方注入合适的值', 'yellow', 'reset'),
+    desc: xlog.format('根据 %csrc/config/config.json%c 文件的配置，给项目其它地方注入合适的值', 'yellow', 'reset'),
     cmd: function(res) {
       injectReadme(config)
-      injectInterface(config)
+      injectInterfaceAndData(config)
       injectPackage(config)
     }
   }
@@ -83,7 +84,8 @@ function injectPackage({name, options, commands: cs}: IConfig) {
   }
 }
 
-function injectInterface({data}: IConfig) {
+function injectInterfaceAndData({data}: IConfig) {
+  let dataExplain: string[] = []
   let basicData = Object.keys(data).reduce((lines: string[], key) => {
     let d = data[key]
     lines.push('/**')
@@ -91,10 +93,12 @@ function injectInterface({data}: IConfig) {
     lines.push(' * @type {' + d.type + '}')
     lines.push(' */')
     lines.push(`${key}${d.optional ? '?' : ''}: ${d.type}`)
+    dataExplain.push(`${key}: {desc: '${d.description}', type: '${d.type}'}`)
     return lines
   }, []).join(os.EOL)
 
   inject(interfacePath, {basicData})
+  inject(dataPath, {dataExplain: dataExplain.join(',' + os.EOL)})
 }
 
 function injectReadme({options, data, commands: cs, name}: IConfig) {

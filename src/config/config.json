@@ -1,35 +1,34 @@
-
 {
   "name": "dot-template",
 
   "data": {
     "rootPath": {
       "type": "string",
-      "description": "项目根目录路径"
+      "description": "项目根目录的绝对路径"
     },
     "npmPath": {
       "type": "string",
-      "description": "node_modules 目录路径"
+      "description": "项目下的 node_modules 目录的绝对路径"
     },
     "date": {
       "type": "string",
-      "description": "当前日期"
+      "description": "当前日期，格式：yyyy-mm-dd"
     },
     "time": {
       "type": "string",
-      "description": "当前时间"
+      "description": "当前时间，格式: hh-mm"
     },
     "datetime": {
       "type": "string",
-      "description": "当前日期与时间"
+      "description": "当前日期和时间，格式：yyyy-mm-dd hh-mm"
     },
     "user": {
       "type": "string",
-      "description": "系统用户，读取环境变量中的 HOME"
+      "description": "当前用户，通过读取环境变量中的 USER 字段而获取到的"
     },
     "pkg": {
       "type": "{[key: string]: any}",
-      "description": "项目根目录上的 package.json 文件的内容"
+      "description": "当前项目的 package.json 所对应的 JSON 对象"
     },
 
     "filePath": {
@@ -38,7 +37,7 @@
     },
     "relativeFilePath": {
       "type": "string",
-      "description": "当前文件相对根目录的路径"
+      "description": "当前文件相对于根目录的路径"
     },
     "fileName": {
       "type": "string",
@@ -46,35 +45,35 @@
     },
     "fileExt": {
       "type": "string",
-      "description": "当前文件的后缀"
+      "description": "当前文件的后缀名"
     },
     "dirPath": {
       "type": "string",
-      "description": "当前文件的目录的绝对路径"
+      "description": "当前文件所在的目录的绝对路径"
     },
     "dirName": {
       "type": "string",
-      "description": "当前文件的目录的名称"
+      "description": "当前文件所在的目录的名称"
     },
     "rawModuleName": {
       "type": "string",
-      "description": "和 fileName 一样"
+      "description": "fileName 的别名，即当前文件的名称（不含后缀）"
     },
     "moduleName": {
       "type": "string",
-      "description": "fileName 的驼峰形式"
+      "description": "驼峰形式的 fileName"
     },
     "ModuleName": {
       "type": "string",
-      "description": "fileName 中的每个单词首字母都大写"
+      "description": "单词首字母都大写的形式的 fileName"
     },
     "MODULE_NAME": {
       "type": "string",
-      "description": "fileName 中所有字母都大写，并用下划线连接"
+      "description": "所有字母都大写，中间以下划线连接的 fileName"
     },
     "module_name": {
       "type": "string",
-      "description": "fileName 中所有字母都小写，并用下划线连接"
+      "description": "所有字母都小写，中间以下划线连接的 fileName"
     },
     "ref": {
       "optional": true,

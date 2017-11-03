@@ -11,11 +11,11 @@
 			"patterns": [
 				{
 					"name": "keyword.unquoted.dtpl",
-					"match": "(\\$[a-zA-Z][\\-\\w]*)\\b"
+					"match": "(\\$[a-zA-Z][\\w]*)\\b"
 				},
 				{
 					"name": "keyword.quoted.dtpl",
-					"match": "(\\$\\{[a-zA-Z][\\-\\w\\.]*\\})"
+					"match": "(\\$\\{[a-zA-Z][\\w\\.]*\\})"
 				}
 			]
 		}

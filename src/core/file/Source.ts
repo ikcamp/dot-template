@@ -3,10 +3,11 @@ import * as minimatch from 'minimatch'
 import * as fs from 'fs-extra'
 import {Template} from './Template'
 import {Application} from '../Application'
-import {enableRequireTsFile, transformer, IBasicData, IData, IDtplConfig, IUserTemplate} from '../common'
+import {enableRequireTsFile, IBasicData, IData, IDtplConfig, IUserTemplate, data} from '../common'
 
 export class Source {
   private _basicData: IBasicData
+  private _configFileMtime: {[key: string]: number} = {}
 
   relativeFilePath: string
   exists: boolean
@@ -30,47 +31,7 @@ export class Source {
 
   get basicData(): IBasicData {
     if (!this._basicData) {
-      let d = new Date()
-      let pad = (n: number): number | string => n < 10 ? '0' + n : n
-      let date = [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(pad).join('-')
-      let time = [d.getHours(), d.getMinutes()].map(pad).join(':')
-      let datetime = date + ' ' + time
-
-      let rootPath = this.app.rootPath
-      let npmPath = path.join(rootPath, 'node_modules')
-
-      let pkg = {}
-      try { pkg = require(path.join(rootPath, 'package.json')) } catch (e) { }
-
-      let {filePath, relativeFilePath} = this
-      let dirPath = path.dirname(filePath)
-      let fileExt = path.extname(filePath)
-      let fileName = path.basename(filePath, fileExt)
-      let dirName = path.basename(dirPath)
-
-      this._basicData =  {
-        date,
-        time,
-        datetime,
-
-        user: process.env.USER,
-        pkg,
-
-        rootPath,
-        npmPath,
-        filePath,
-        dirPath,
-        fileName,
-        dirName,
-        fileExt,
-        relativeFilePath,
-
-        rawModuleName: fileName,
-        moduleName: transformer.camel(fileName),
-        ModuleName: transformer.capitalize(fileName),
-        MODULE_NAME: transformer.upper(fileName),
-        module_name: transformer.snake(fileName)
-      }
+      this._basicData = data(this.app.rootPath, this.filePath)
     }
     return this._basicData
   }
@@ -101,7 +62,7 @@ export class Source {
         }
 
         if (config) {
-          let userTemplate = this.findMatchedUserTemplate(dtplFolder, isTemplateDirectory, config)
+          let userTemplate = this.findMatchedUserTemplate(dtplFolder, configFile as string, isTemplateDirectory, config)
 
           if (userTemplate) {
             const templatePath = path.resolve(dtplFolder, userTemplate.name)
@@ -122,40 +83,51 @@ export class Source {
   /**
    * 根据用户的配置，查找一个匹配的并且存在的模板文件
    */
-  private findMatchedUserTemplate(dtplFolder: string, isTemplateDirectory: boolean, config: IDtplConfig): IUserTemplate | undefined {
+  private findMatchedUserTemplate(dtplFolder: string, configFile: string, isTemplateDirectory: boolean, config: IDtplConfig): IUserTemplate | undefined {
     let defaultMinimatchOptions = this.app.editor.configuration.minimatchOptions
 
     return config.templates.find(t => {
       let matches = Array.isArray(t.matches) ? t.matches : [t.matches]
-      return !!matches.find(m => {
-        let result: boolean = false
-        if (typeof m === 'string') {
-          if (t.minimatch === false) {
-            result = this.relativeFilePath === m
-          } else {
-            result = minimatch(this.relativeFilePath, m, typeof t.minimatch !== 'object' ? defaultMinimatchOptions : t.minimatch)
-          }
-        } else if (typeof m === 'function') {
-          result = !!this.app.runUserFunction('template.match', m, [minimatch, this], t)
-        }
+      let templatePath = path.resolve(dtplFolder, t.name)
 
-        if (result) {
-          let templatePath = path.resolve(dtplFolder, t.name)
-          if (!fs.existsSync(templatePath)) {
-            this.app.warning(`模板 ${t.name} 对应的文件 %f 不存在，已忽略`, templatePath)
-            result = false
-          } else {
-            let stats = fs.statSync(templatePath)
-            if (stats.isFile() && isTemplateDirectory || stats.isDirectory() && !isTemplateDirectory) {
-              this.app.warning(`模板 ${t.name} 对应的文件 %f ${isTemplateDirectory ? '应该是目录' : '不应该是目录'}`, templatePath)
-              result = false
+      let found: boolean = false
+      if (templatePath === this.filePath && templatePath.endsWith('.dtpl')) { // 当前编辑的文件就是它自己，匹配成功，主要为了触发 dtpl 文件的自动补全
+        found = true
+      } else {
+        found = !!matches.find(m => {
+          let result = false
+          if (typeof m === 'string') {
+            if (t.minimatch === false) {
+              result = this.relativeFilePath === m
+            } else {
+              result = minimatch(this.relativeFilePath, m, typeof t.minimatch !== 'object' ? defaultMinimatchOptions : t.minimatch)
             }
+          } else if (typeof m === 'function') {
+            result = !!this.app.runUserFunction('template.match', m, [minimatch, this], t)
+          } else {
+            this.app.warning(`配置文件 %f 中的模板 ${t.name} 中的 matches 配置错误，只允许字符串或函数`, configFile)
+            result = false
+          }
+
+          this.app.debug(`TEMPLATE: ${t.name} MATCH: ${m} 匹配${result ? '' : '不'}成功`)
+          return result
+        })
+      }
+
+      if (found) {
+        if (!fs.existsSync(templatePath)) {
+          this.app.warning(`模板 ${t.name} 对应的文件 %f 不存在，已忽略`, templatePath)
+          found = false
+        } else {
+          let stats = fs.statSync(templatePath)
+          if (stats.isFile() && isTemplateDirectory || stats.isDirectory() && !isTemplateDirectory) {
+            this.app.warning(`模板 ${t.name} 对应的文件 %f ${isTemplateDirectory ? '应该是目录' : '不应该是目录'}`, templatePath)
+            found = false
           }
         }
+      }
 
-        this.app.debug(`模板 ${t.name} 匹配${result ? '' : '不'}成功，matches: ${t.matches}`)
-        return result
-      })
+      return found
     })
   }
 
@@ -163,18 +135,30 @@ export class Source {
    * 加载配置文件，每次都重新加载，确保无缓存
    */
   private loadDtplConfig(configFile: string): IDtplConfig | undefined {
+    let mtime = fs.statSync(configFile).mtime.getTime()
+    if (!this._configFileMtime[configFile] || this._configFileMtime[configFile] !== mtime) {
+      delete require.cache[require.resolve(configFile)]
+    }
+    this._configFileMtime[configFile] = mtime
+
     if (configFile.endsWith('.ts')) enableRequireTsFile()
-    delete require.cache[require.resolve(configFile)]
     let mod: any = require(configFile)
     let config: IDtplConfig | undefined
     if (mod) {
-      let fn = typeof mod.default === 'function' ? mod.default : mod
+      let fn = mod.default ? mod.default : mod
       if (typeof fn === 'function') config = this.app.runUserFunction('dtpl config', fn, [this])
+      else if (typeof fn === 'object') config = fn
+      else {
+        this.app.warning(`配置文件 %f 配置错误，没有导出函数或对象`)
+        return
+      }
     }
 
     if (config && (!config.templates || !Array.isArray(config.templates))) {
       this.app.warning(`配置文件 %f 没有返回 templates 数组`, configFile)
+      return
     }
+
     return config
   }
 

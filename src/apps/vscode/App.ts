@@ -7,7 +7,7 @@ import {VscodeEditor} from '../../adapter/VscodeEditor'
 
 export class App {
   private fileSystemWatcher: vscode.FileSystemWatcher
-  private dtpl: Application
+  public dtpl: Application
 
   get activeEditor(): vscode.TextEditor | undefined {
     return vscode.window.activeTextEditor
