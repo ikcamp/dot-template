@@ -23,16 +23,24 @@ interface IConfig {
 }
 const config: IConfig = require('./config/config.json')
 
+const injectable = process.cwd().indexOf(rootPath) === 0
+
 cli({
   usage: './bin [options] <command>'
 })
 .commands({
   inject: {
-    desc: xlog.format('根据 %csrc/config/config.json%c 文件的配置，给项目其它地方注入合适的值', 'yellow', 'reset'),
+    desc: injectable
+      ? xlog.format('根据 %csrc/config/config.json%c 文件的配置，给项目其它地方注入合适的值', 'yellow', 'reset')
+      : '仅供内部程序使用，调用无效',
     cmd: function(res) {
-      injectReadme(config)
-      injectInterfaceAndData(config)
-      injectPackage(config)
+      if (injectable) {
+        injectReadme(config)
+        injectInterfaceAndData(config)
+        injectPackage(config)
+      } else {
+        this.error('此命令仅供内部程序使用')
+      }
     }
   }
 })
@@ -134,7 +142,6 @@ function injectReadme({options, data, commands: cs, name}: IConfig) {
 
   inject(readmePath, {configure, commands, environment})
 }
-
 
 function inject(file: string, data: {[key: string]: any}) {
   let relative = path.relative(rootPath, file)

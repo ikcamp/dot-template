@@ -56,7 +56,7 @@
     "onCommand:extension.createRelatedFiles",
     "onCommand:extension.undoOrRedo"
   ],
-  "main": "./out/extension",
+  "main": "./out/vscode",
   "icon": "res/images/icon.png",
   "contributes": {
     "configuration": {

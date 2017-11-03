@@ -23,9 +23,10 @@ export class CreateTemplateFilesCommand extends Command {
   /**
    * @param {string[]} files 所有要创建的文件绝对路径，一定要确保文件不存在
    * @param {boolean} [open] 是否要打开这些创建好的文件
+   * @param {boolean} [noInitError] 初始化时不要报错，主要 emitNewFile 时可能是因为用户修改了文件夹的名称
    * @memberof CreateFilesCommand
    */
-  constructor(files: string[], private open: boolean, app: Application, options: ICommandInitOptions) {
+  constructor(files: string[], private open: boolean, noInitError: boolean, app: Application, options: ICommandInitOptions) {
     super('CreateTemplateFilesCommand', app, options)
 
     files = this.filter(files, false)
@@ -34,7 +35,7 @@ export class CreateTemplateFilesCommand extends Command {
       this.files = files
     } else {
       this.invalid = true
-      this.app.error('无任何可创建的有效文件：文件路径需要在项目内，并且文件需要不存在，或文件内容为空')
+      if (!noInitError) this.app.error('无任何可创建的有效文件：文件路径需要在项目内，并且文件需要不存在，或文件内容为空')
     }
   }
 

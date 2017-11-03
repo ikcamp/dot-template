@@ -1,6 +1,7 @@
 import {Stats} from 'fs'
 import {Source} from '../core/file/Source'
-export {Source}
+import {Template} from '../core/file/Template'
+export {Source, Template}
 
 export interface IObject { [key: string]: any }
 
@@ -67,15 +68,11 @@ export interface ICopyFilterResult {
 }
 
 /**
- * 复制文件夹模板后，生成的所有复制的文件路径和文件夹路径
+ * 复制文件夹模板后，生成的所有复制的文件路径
  *
  * template 中 afterFilter 函数接收的参数
- *
  */
-export interface ICopyResult {
-  files: string[]
-  folders: string[]
-}
+export type ICopiedFiles = string[]
 
 /**
  * 标识要生成的新文件的路径 和 要插入引用的位置及引用内容
@@ -153,16 +150,9 @@ export interface IUserTemplate {
   name: string
 
   /**
-   * 渲染模板的数据，也可以通过配置函数 getLocalData 来获取，不过此处设置的优先级最高
+   * 渲染模板用的自定义的数据
    */
-  data?: IObject
-
-  /**
-   * 指定一个模板文件，用于在编辑 .dtpl 文件是可以看到此文件的数据
-   *
-   * 不需要是实际存在的文件
-   */
-  sample?: string
+  localData?: IObject
 
   /**
    * 在复制文件夹模板里的文件时，可以过滤掉一些不要复制的文件，或者修改要生成的新文件的路径及内容
@@ -170,11 +160,16 @@ export interface IUserTemplate {
   filter?: (source: ICopySource) => boolean | ICopyFilterResult
 
   /**
+   * 在复制文件时，是否覆盖已有的文件；默认会创建一个 .backup 文件夹用于存放原有文件
+   */
+  overwrite?: boolean
+
+  /**
    * 过滤完后，并且文件都已复制完成后会执行此函数
    *
    * 可以用它来创建一些新文件，或者删除一些文件，总之任何 node 可以做的事你都可以在这里尝试
    */
-  afterFilter?: (fromDir: string, toDir: string, result: ICopyResult) => void
+  afterFilter?: (fromDir: string, toDir: string, result: ICopiedFiles, template: Template) => void
 
   /**
    * 获取关联的文件信息

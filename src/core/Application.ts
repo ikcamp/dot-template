@@ -43,12 +43,13 @@ export class Application {
       })
       newFiles.length = 0
 
+      // 有可能是重命名文件夹，所以不用打开文件
       if (isFirstFile) {
-        files.length && this.createTemplateFiles(files, true)
-        folders.length && this.createDirectories(folders)
+        files.length && this.createTemplateFiles(files, false, true)
+        folders.length && this.createDirectories(folders, true)
       } else {
-        folders.length && this.createDirectories(folders)
-        files.length && this.createTemplateFiles(files, true)
+        folders.length && this.createDirectories(folders, true)
+        files.length && this.createTemplateFiles(files, false, true)
       }
     }
 
@@ -67,17 +68,17 @@ export class Application {
   }
 
   createRelatedFiles = async (textFile: string) => await this.cmder.addCreateRelatedFilesCommand(textFile)
-  createDirectories = async (folders: string[]) => {
-    let result = await this.cmder.addCreateDirectoriesCommand(folders)
+  createDirectories = async (folders: string[], noInitError: boolean = false) => {
+    let result = await this.cmder.addCreateDirectoriesCommand(folders, noInitError)
     if (result) {
       let folder = folders.find(f => path.basename(f) === this.editor.configuration.dtplFolderName)
       if (folder) {
-        this.info('恭喜，成功创建 dot-template 配置文件夹 %f，快去该目录下看 dtpl.ts 和 readme.md 文件吧', folder)
+        this.info('恭喜，成功创建 dot-template 配置文件夹 %f，快去该目录下查看 readme.md 文件吧', folder)
       }
     }
     return result
   }
-  createTemplateFiles = async (textFile: string[], open: boolean) => await this.cmder.addCreateTemplateFilesCommand(textFile, open)
+  createTemplateFiles = async (textFile: string[], open: boolean, noInitError: boolean = false) => await this.cmder.addCreateTemplateFilesCommand(textFile, open, noInitError)
   undoOrRedo = async () => this.cmder.hasPrev ? await this.cmder.prev() : await this.cmder.next()
 
   runUserFunction<T>(name: string, fn: (...args: any[]) => T, args: any[] = [], context?: any): T | undefined {

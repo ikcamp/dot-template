@@ -1,4 +1,4 @@
-import {ICopySource, ICopyFilterResult, ICopyResult, IUserTemplate, IData, IRelated} from '../common'
+import {ICopySource, ICopyFilterResult, ICopiedFiles, IUserTemplate, IData, IRelated} from '../common'
 import {Source} from './Source'
 import {Application} from '../Application'
 
@@ -17,11 +17,11 @@ export class Template {
     return true
   }
 
-  afterFilter(fromDir: string, toDir: string, result: ICopyResult): void {
+  afterFilter(fromDir: string, toDir: string, result: ICopiedFiles): void {
     let {custom} = this
     let {afterFilter} = custom
     if (typeof afterFilter === 'function') {
-      this.app.runUserFunction('template.afterFilter', afterFilter, [fromDir, toDir, result], custom)
+      this.app.runUserFunction('template.afterFilter', afterFilter, [fromDir, toDir, result, this], custom)
     }
   }
 

@@ -10,7 +10,7 @@ export class CreateDirectoriesCommand extends Command {
   private templates: Template[]
   private exists: boolean[] = []
 
-  constructor(folders: string[], app: Application, options: ICommandInitOptions) {
+  constructor(folders: string[], noInitError: boolean, app: Application, options: ICommandInitOptions) {
     super('CreateDirectoriesCommand', app, options)
     let templates: Template[] = []
     this.filter(folders, true).forEach(f => {
@@ -22,7 +22,7 @@ export class CreateDirectoriesCommand extends Command {
       this.templates = templates
     } else {
       this.invalid = true
-      this.app.error('无任何可创建的有效文件夹：文件路径需要在项目内，并且文件夹需要不存在，或文件夹内无任何文件')
+      if (!noInitError) this.app.error('无任何可创建的有效文件夹：文件路径需要在项目内，并且文件夹需要不存在，或文件夹内无任何文件')
     }
   }
 
@@ -34,7 +34,6 @@ export class CreateDirectoriesCommand extends Command {
       let toDir = tpl.source.filePath
 
       let copiedFiles: string[] = []
-      let copiedFolders: string[] = []
 
       this.debug('开始复制目录 %f => %f', fromDir, toDir)
       let exists = fs.existsSync(toDir)
@@ -77,18 +76,21 @@ export class CreateDirectoriesCommand extends Command {
           return false
         }
 
-        if (stats.isDirectory()) {
-          fs.ensureDirSync(toPath)
-          copiedFolders.push(toPath)
-        } else if (stats.isFile()) {
+        if (stats.isFile()) {
+          // 备份已经存在的文件
+          if (!tpl.custom.overwrite && fs.existsSync(toPath)) {
+            let backupDir = path.resolve(toPath, '..', '.backup')
+            fs.mkdirpSync(backupDir)
+            fs.renameSync(toPath, path.join(backupDir, path.basename(toPath)))
+          }
           await this.createFileAsync(toPath, content)
           copiedFiles.push(toPath)
+          this.debug('复制文件 %f => %f', fromPath, toPath)
         }
-        this.debug('复制文件 %f => %f', fromPath, toPath)
+
         return true
       })
-
-      tpl.afterFilter(fromDir, toDir, {files: copiedFiles, folders: copiedFolders})
+      tpl.afterFilter(fromDir, toDir, copiedFiles)
       this.debug('目录复制完成')
     })
 

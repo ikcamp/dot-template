@@ -82,14 +82,23 @@ export class Commander {
     return {timeout: this.app.editor.configuration.commandInvalidTimeout}
   }
 
-  async addCreateDirectoriesCommand(folders: string[]): Promise<boolean> {
-    return this.add(new CreateDirectoriesCommand(folders, this.app, this.getCommonComamndOpts()))
+  private async wrap(fn: () => Promise<boolean>): Promise<boolean> {
+    try {
+      return await fn()
+    } catch (e) {
+      this.app.error(e.message, e)
+      return false
+    }
+  }
+
+  async addCreateDirectoriesCommand(folders: string[], noInitError: boolean): Promise<boolean> {
+    return this.wrap(() => this.add(new CreateDirectoriesCommand(folders, noInitError, this.app, this.getCommonComamndOpts())))
   }
   async addCreateRelatedFilesCommand(textFile: string): Promise<boolean> {
-    return this.add(new CreateRelatedFilesCommand(textFile, this.app, this.getCommonComamndOpts()))
+    return this.wrap(() => this.add(new CreateRelatedFilesCommand(textFile, this.app, this.getCommonComamndOpts())))
   }
-  async addCreateTemplateFilesCommand(textFiles: string[], open: boolean): Promise<boolean> {
-    return this.add(new CreateTemplateFilesCommand(textFiles, open, this.app, this.getCommonComamndOpts()))
+  async addCreateTemplateFilesCommand(textFiles: string[], open: boolean, noInitError: boolean): Promise<boolean> {
+    return this.wrap(() => this.add(new CreateTemplateFilesCommand(textFiles, open, noInitError, this.app, this.getCommonComamndOpts())))
   }
 
   get hasNext() { return this.cursor < this.length - 1 }

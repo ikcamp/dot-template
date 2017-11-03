@@ -68,7 +68,7 @@ export class Source {
             const templatePath = path.resolve(dtplFolder, userTemplate.name)
             this.app.debug(`找到匹配的模板文件 %f`, templatePath)
 
-            return this.createTemplate(templatePath, {...this.basicData, ...(config.globalData || {}), ...(userTemplate.data || {})}, userTemplate)
+            return this.createTemplate(templatePath, {...this.basicData, ...(config.globalData || {}), ...(userTemplate.localData || {})}, userTemplate)
           } else {
             this.app.debug('配置文件 %f 中没有匹配的模板', configFile as string)
           }

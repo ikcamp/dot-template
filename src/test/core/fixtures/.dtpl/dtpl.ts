@@ -10,14 +10,14 @@ export default function(source: _.Source): _.IDtplConfig {
       {
         name: 'variable.dtpl',
         matches: ['var-yes*'],
-        data: {
+        localData: {
           foo: {bar: 'foobar'}
         }
       },
       {
         name: 'variable.dtpl',
         matches: ['var-no*'],
-        data: {foo: 'foo', bar: 'bar'}
+        localData: {foo: 'foo', bar: 'bar'}
       },
       {
         name: 'text.txt',

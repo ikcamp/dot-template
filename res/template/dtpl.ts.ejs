@@ -1,107 +1,122 @@
 import * as _ from '<%=ref.interface%>'
-import * as os from 'os'
+import * as path from 'path'
 
-/**
- * TODO:
- */
+// 注意：建议将此文件编译成 js 文件放于同目录下，这样 dot-template 速度可能会更快！
+
 export default function(source: _.Source): _.IDtplConfig {
   return {
     templates: [
+
+      /**
+       * =================  模板一 : 文件夹复制   =================
+       *    当新建一个以 "-example" 结尾的文件夹时，会自
+       *    动将 .dtpl/template/example 下的所有文件内
+       *    容复制到你新建的文件夹内
+       *
+       *    另外，由于以 .dtpl 结尾的文件是模板文件，所以
+       *    系统会用内部生成的数据和用户指定的数据去渲染模板，
+       *    生成新的内容，然后去除模板文件的后缀，写入新的对应
+       *    的文件内
+       *
+       *    支持的模板有： dtpl, ejs 和 nunjunk；对应的后缀名分别默认为： .dtpl, .ejs,  .njk
+       */
       {
-        // 指定 html 文件模板，匹配所有创建的以 .html 结尾的文件
-        // 你可以随便在项目中创建个 html 文件试试看
-        name: 'templates/any.html.dtpl',
-        matches: ['*.html'],
-        data: {
-          test: 'haha'
-        }
-      },
+        name: 'template/example',   // 指定当前目录下的模板名称
+        matches: '*-example',       // 匹配新建的文件夹的路径（使用了 minimatch 来匹配）
 
-      {
-        // js 模板，在 sample 目录创建的所有以 js 结尾的文件都会使用此模板
-        name: 'templates/sample.js.dtpl',
-        matches: ['sample/**/*.js'],
-
-        // 创建 js 文件的关联的样式文件
-        related: (data: _.IData, fileContent: string) => {
-          let ref = `./styles/${data.rawModuleName}.css`
-          return {
-            relativePath: ref,              // 要创建的文件的路径
-            reference: `require('${ref}')`, // 要插入在 js 文件中的引用
-            smartInsertStyle: true          // 自动插入到合适的地方，只有插入样式在 js/ts 文件中才有效
+        // 过滤模板内的文件，主要功能有：
+        //    * 删除掉指定的文件  ( 返回 false 即表示删除当前 target )
+        //    * 返回新的文件内容  ( 返回 {content: '...'} )
+        //    * 返回新的文件路径  ( 返回 {filePath: '...'}，如此例所示 )
+        filter(target) {
+          // template/example/config 目录下的文件需要到最外层去
+          // 所以此处需要修改它的路径
+          let dir = path.dirname(target.toPath)
+          if (path.basename(dir) === 'config') {
+            return {
+              filePath: path.resolve(dir, '..', '..', target.name)
+            }
           }
-        }
-      },
-
-      {
-        // 指定模板名称，需要在同目录下有个同名的文本文件或者文件夹
-        name: 'folder-template',
-
-        /**
-         * 匹配『在项目根目录创建 sample 文件夹』或者『在项目根目录创建 sample/foo 文件夹』的行为
-         *
-         * 因为设置了 minimatch 为 false，所以会匹配全路径，
-         * 如果将 minimatch 设置为 true，则会匹配到在项目任何地方创建对应文件夹的行为
-         */
-        matches: ['sample', 'sample/foo'],
-        minimatch: false,
-
-        /**
-         * 当用户创建了指定的文件夹后，系统会自动复制此模板文件夹下的所有文件到这个新创建的文件
-         *
-         * - 返回 false 表示不要复制此文件
-         * - 返回 true 表示复制此文件
-         * - 返回 {newContent: '...'} 表示修改复制后的文件内容
-         * - 返回 {newName: 'foo.ts'} 表示修改复制后的文件的名称
-         * - 返回 {newRelative: 'another/path/to/foo.ts'} 表示修改复制后的文件的路径
-         * - newRelative 和 newName 不需要同时设置，同时设置了优先使用 newRelative
-         */
-        filter(copySource: _.ICopySource): boolean | _.ICopyFilterResult {
-          // 给每个文件添加一个 footer 信息
-          let content = copySource.content
-          let footer = 'Created by [dot-template](https://marketplace.visualstudio.com/items?itemName=qiu8310.dot-template), made by Mora(qiuzhongleiabc@126.com)'
-          if (/\.(jsx?|tsx?)$/.test(copySource.name)) {
-            footer = '/*  ' + footer + '  */'
-          } else {
-            footer = '**' + footer + '**'
-          }
-
-          return {
-            content: content + os.EOL + os.EOL + footer + os.EOL
-          }
+          return true
         },
+        overwrite: false    // 如果有重名文件，是否覆盖它；不覆盖会新建一个 .backup 目录来存放原文件
+      },
+      // =======================      模板一 配置结束     =======================
 
+
+      /**
+       * =================  模板二 : 文件内容生成   =================
+       *
+       * 当在项目的 widget 目录下新建 tsx 文件时，会自动使用 template/widget.tsx.dtpl 来生成文件内容
+       */
+      {
+        name: 'template/widget.tsx.dtpl',
+        matches: '*-example/widget/**/*.tsx'
+      },
+
+      // =======================      模板二 配置结束     =======================
+
+
+
+      /**
+       * =================  模板三 : 创建关联文件，并生成其内容   =================
+       */
+      {
+        name: 'template/page.tsx.dtpl',         // 模板文件的路径
+        matches: '*-example/page/**/*.tsx',     // 匹配 example/page 下的所有后缀为 tsx 的文件
         /**
-         * 文件夹模板内的所有文件都复制完后会执行此函数
+         * 创建和此 page 相关联的 样式文件
          *
-         * 你可以用它来创建一些新文件，或者删除一些文件，总之任何 node 可以做的事你都可以在这里尝试
+         * 在同目录下的 style 文件夹下创建一个同名的 css 文件，并且在当前文件中插入 require('style/[name].css') 的引用
          */
-        afterFilter(fromDir: string, toDir: string, result: _.ICopyResult): void {
-
+        related(data) {
+          let styleFile = `./style/${data.fileName}.css`
+          return {
+            relativePath: styleFile,                // 指定要新建文件的路径
+            reference: `require('${styleFile}')`,   // 要给 tsx 文件插入的引用
+            // 自动插入引用在合适的地方，此配置只适用于 js/ts 文件对样式文件的引用
+            // 如果是其它引用形式，可以通过指定 begin 和 end 坐标来插入到合适的地方
+            smartInsertStyle: true
+          }
         }
+      },
+
+      // 给样式文件指定模板，这样当它被创建时，会使用此模板
+      {
+        name: 'template/page.css.dtpl',
+        matches: '*-example/page/**/*.css'
       }
+      // =======================      模板三 配置结束     =======================
     ],
 
     /**
-     * 生成自定义的数据，在渲染模板时会使用；注意，在创建三种不同的文件时，数据结构会有细微不一样
+     * 生成自定义的数据，在渲染模板时会使用，模板总共会从三处获取数据
+     *
+     *  1. 系统提供的文件本身的 basicData ，参考： https://github.com/qiu8310/dot-template#environment
+     *  2. 用户配置的只有指定的模板才能用的 localData，可以在 templates 中的对象中配置
+     *  3. 用户配置的所有模板都可以用的 globalData，如下所示
+     *
+     *
+     * 注意，在创建三种不同的文件时，数据结构会有细微不一样
+     *
+     * - 文件夹复制
+     *
+     *    模板文件夹内的文件都没有 localData，但它可以通过 ref 获取到文件夹模板的 data 数据，
+     *    而文件夹模板是可以包含 localData 的
      *
      * - 创建文本文件
      *
-     *  文件文件默认的 data 会和此函数返回的数据 merge
+     *    文本文件默认的 data 会和 globalData 的数据 merge
+     *
      *
      * - 创建关联文件
      *
-     *  源文件和关联文件可能都会有它自己的模板，有它自己的 localData，
-     *  所以它们的 data 会和各自的 localData 合并，有一点不一样的是，
-     *  关联文件可以通过 ref 来引用源文件的所有 data 数据
-     *
-     * - 创建文件夹模板内的文件
-     *
-     *  模板文件夹内的文件都没有 localData，但它可以通过 ref 获取到文件夹模板的 data 数据，
-     *  而文件夹模板是可以包含 localData 的
+     *    源文件和关联文件可能都会有它自己的模板，有它自己的 localData，
+     *    所以它们的 data 会和各自的 localData 合并，有一点不一样的是，
+     *    关联文件可以通过 ref 来引用源文件的所有 data 数据
      */
     globalData: {
-      ga: 'UA-xxxxxxxx-xx'
+      projectName: '<%=ref.fileName%>'
     }
   }
 }

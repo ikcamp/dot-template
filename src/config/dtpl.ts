@@ -10,7 +10,7 @@ export default function(source: _.Source): _.IDtplConfig {
         // 当前指定的是一个文件夹模板
         name: '../../res/template',
 
-        data: {
+        localData: {
           interface: path.resolve(source.app.dotTemplateRootPath, 'out', 'common', 'interface')
         },
 
@@ -33,7 +33,7 @@ export default function(source: _.Source): _.IDtplConfig {
           }
         },
 
-        afterFilter(fromDir: string, toDir: string, result: _.ICopyResult): void {
+        afterFilter(fromDir: string, toDir: string, result: _.ICopiedFiles): void {
 
         }
       }

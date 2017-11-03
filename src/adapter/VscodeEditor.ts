@@ -138,17 +138,22 @@ export class VscodeEditor extends Editor {
   }
 
   debug(message: string) {
-    console.log('[dtpl] ' + message)
+    console.log('[dot-template] ' + message)
   }
   warning(message: string) {
-    vscode.window.showWarningMessage(`[dtpl] ${message}`)
+    vscode.window.showWarningMessage(`[dot-template] ${message}`)
   }
   info(message: string) {
-    vscode.window.showInformationMessage(`[dtpl] ${message}`)
+    vscode.window.showInformationMessage(`[dot-template] ${message}`)
   }
   error(message: string, e?: Error | any) {
-    vscode.window.showErrorMessage(`[dtpl] ${message} （打开输出面板可以看到消息信息）`)
-    if (e) console.error(e)
+    let hasError = !!e
+    let tip = hasError ? '（打开输出面板可以看到详细信息）' : ''
+
+    message = message.split(/\r?\n/)[0] // 取第一行
+
+    vscode.window.showErrorMessage(`[dot-template] ${message} ${tip}`)
+    if (hasError) console.error(e)
   }
 }
 
