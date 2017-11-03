@@ -96,7 +96,7 @@
     },
 
     "undoOrRedo": {
-      "title":"DTPL: Undo or Redo created files",
+      "title":"DTPL: Undo or Redo last action",
       "key": "ctrl+k ctrl+u",
       "mac": "cmd+k cmd+u"
     }

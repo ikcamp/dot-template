@@ -9,5 +9,7 @@ src/**
 tsconfig.json
 wallaby.js
 vsc-extension-quickstart.md
+vsc-commands.md
+TODO.md
 yarn.lock
 coverage/
