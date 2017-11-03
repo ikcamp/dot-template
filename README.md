@@ -128,7 +128,7 @@ If you have any requirements or dependencies, add a section describing those and
 * `createRelatedFiles`: DTPL: Create related files
     win 快捷键： `ctrl+k ctrl+s`
     mac 快捷键： `cmd+k cmd+s`
-* `undoOrRedo`: DTPL: Undo or Redo created files
+* `undoOrRedo`: DTPL: Undo or Redo last action
     win 快捷键： `ctrl+k ctrl+u`
     mac 快捷键： `cmd+k cmd+u`
 <!--# INJECT_END #-->

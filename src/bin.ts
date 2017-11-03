@@ -63,7 +63,7 @@ function injectPackage({name, options, commands: cs}: IConfig) {
   let activationEvents: string[] = []
   let keybindings: Array<{command: string, key?: string, mac?: string}> = []
   let commands = Object.keys(cs).map(key => {
-    let command = 'extension.' + key
+    let command = name + '.' + key
     let c = cs[key]
     if (c.key || c.mac) keybindings.push({command, key: c.key, mac: c.mac})
 

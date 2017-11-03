@@ -52,9 +52,9 @@
   "activationEvents": [
     "*",
     "onLanguage:dtpl",
-    "onCommand:extension.createTemplateFile",
-    "onCommand:extension.createRelatedFiles",
-    "onCommand:extension.undoOrRedo"
+    "onCommand:dot-template.createTemplateFile",
+    "onCommand:dot-template.createRelatedFiles",
+    "onCommand:dot-template.undoOrRedo"
   ],
   "main": "./out/vscode",
   "icon": "res/images/icon.png",
@@ -144,31 +144,31 @@
     },
     "commands": [
       {
-        "command": "extension.createTemplateFile",
+        "command": "dot-template.createTemplateFile",
         "title": "DTPL: Create template files"
       },
       {
-        "command": "extension.createRelatedFiles",
+        "command": "dot-template.createRelatedFiles",
         "title": "DTPL: Create related files"
       },
       {
-        "command": "extension.undoOrRedo",
-        "title": "DTPL: Undo or Redo created files"
+        "command": "dot-template.undoOrRedo",
+        "title": "DTPL: Undo or Redo last action"
       }
     ],
     "keybindings": [
       {
-        "command": "extension.createTemplateFile",
+        "command": "dot-template.createTemplateFile",
         "key": "ctrl+k ctrl+p",
         "mac": "cmd+k cmd+p"
       },
       {
-        "command": "extension.createRelatedFiles",
+        "command": "dot-template.createRelatedFiles",
         "key": "ctrl+k ctrl+s",
         "mac": "cmd+k cmd+s"
       },
       {
-        "command": "extension.undoOrRedo",
+        "command": "dot-template.undoOrRedo",
         "key": "ctrl+k ctrl+u",
         "mac": "cmd+k cmd+u"
       }
