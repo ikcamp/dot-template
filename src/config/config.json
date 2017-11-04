@@ -83,7 +83,7 @@
   },
 
   "commands": {
-    "createTemplateFile": {
+    "createTemplateFiles": {
       "title": "DTPL: Create template files",
       "key": "ctrl+k ctrl+p",
       "mac": "cmd+k cmd+p"

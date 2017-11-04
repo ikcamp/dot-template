@@ -9,9 +9,12 @@ export function activate(context: vscode.ExtensionContext) {
     app,
     vscode.languages.registerHoverProvider(dtplDocumentSelector, new HoverProvider()),
     vscode.languages.registerCompletionItemProvider(dtplDocumentSelector, new AutoCompletion(), '$', '.', '${'),
-    vscode.commands.registerCommand('extension.createTemplateFile', app.createTemplateFiles),
-    vscode.commands.registerCommand('extension.createRelatedFiles', app.createRelatedFiles),
-    vscode.commands.registerCommand('extension.undoOrRedo', app.undoOrRedo)
+
+    /*# INJECT_START commands #*/
+    vscode.commands.registerCommand('dot-template.createTemplateFiles', app.createTemplateFiles),
+    vscode.commands.registerCommand('dot-template.createRelatedFiles', app.createRelatedFiles),
+    vscode.commands.registerCommand('dot-template.undoOrRedo', app.undoOrRedo)
+    /*# INJECT_END #*/
   )
 
   return app

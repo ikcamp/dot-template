@@ -110,7 +110,7 @@ export abstract class Editor {
 
   /* istanbul ignore next */
   debug(message: string) {
-    console.log('[dtpl] ' + message)
+    if (this.configuration.debug) console.log('[dtpl] ' + message)
   }
   /* istanbul ignore next */
   info(message: string) {

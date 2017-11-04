@@ -122,7 +122,7 @@ If you have any requirements or dependencies, add a section describing those and
 ## 支持命令
 
 <!--# INJECT_START commands #-->
-* `createTemplateFile`: DTPL: Create template files
+* `createTemplateFiles`: DTPL: Create template files
     win 快捷键： `ctrl+k ctrl+p`
     mac 快捷键： `cmd+k cmd+p`
 * `createRelatedFiles`: DTPL: Create related files

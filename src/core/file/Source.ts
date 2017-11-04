@@ -15,6 +15,7 @@ export class Source {
   isFile: boolean
   isDirectory: boolean
   fileContent: string
+  systemConfigDir: string
 
   constructor(public app: Application, public filePath: string) {
     let stats: fs.Stats | undefined
@@ -27,6 +28,8 @@ export class Source {
     this.isDirectory = stats ? stats.isDirectory() : false
     this.fileContent = this.isFile ? this.app.editor.getFileContent(filePath) : ''
     this.relativeFilePath = path.relative(this.app.rootPath, this.filePath)
+
+    this.systemConfigDir = path.join(app.dotTemplateRootPath, 'out', 'config')
   }
 
   get basicData(): IBasicData {
@@ -50,7 +53,7 @@ export class Source {
       dtplFolders = dtplFolders.filter(f => f.indexOf(this.filePath) !== 0)
     }
 
-    dtplFolders.push(path.join(this.app.dotTemplateRootPath, 'out', 'config')) // dtpl 一定会使用的 .dtpl 目录
+    dtplFolders.push(this.systemConfigDir) // dtpl 一定会使用的 .dtpl 目录
     for (let dtplFolder of dtplFolders) {
       if (fs.existsSync(dtplFolder)) {
         let configFile = this.findConfigFileInDtplFolder(dtplFolder)
@@ -109,7 +112,9 @@ export class Source {
             result = false
           }
 
-          this.app.debug(`TEMPLATE: ${t.name} MATCH: ${m} 匹配${result ? '' : '不'}成功`)
+          if (dtplFolder !== this.systemConfigDir) {
+            this.app.debug(`TEMPLATE: ${t.name} MATCH: ${m} 匹配${result ? '' : '不'}成功`)
+          }
           return result
         })
       }

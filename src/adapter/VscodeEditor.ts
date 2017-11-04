@@ -138,7 +138,7 @@ export class VscodeEditor extends Editor {
   }
 
   debug(message: string) {
-    console.log('[dot-template] ' + message)
+    if (this.configuration.debug) console.log('[dot-template] ' + message)
   }
   warning(message: string) {
     vscode.window.showWarningMessage(`[dot-template] ${message}`)

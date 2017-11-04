@@ -24,8 +24,7 @@ export class Application {
     // 监听新建文件或者文件夹的操作
     let sid: NodeJS.Timer
     let newFiles: string[] = []
-    let run = () => {
-      let isFirstFile = true
+    let run = async () => {
       let files: string[] = []
       let folders: string[] = []
 
@@ -37,30 +36,36 @@ export class Application {
             files.push(f)
           } else if (stats.isDirectory()) {
             folders.push(f)
-            if (i === 0) isFirstFile = false
           }
         }
       })
       newFiles.length = 0
 
       // 有可能是重命名文件夹，所以不用打开文件
-      if (isFirstFile) {
-        files.length && this.createTemplateFiles(files, false, true)
-        folders.length && this.createDirectories(folders, true)
-      } else {
-        folders.length && this.createDirectories(folders, true)
-        files.length && this.createTemplateFiles(files, false, true)
-      }
+      files.length && await this.createTemplateFiles(files, false, true)
+      folders.length && await this.createDirectories(folders, true)
     }
 
+    let isRunning = false
     this.event.on('newFile', (filePath: string) => {
       // 执行命令时会创建新文件，会被检测到，要忽略它
-      if (this.cmder.fileMaybeCreatedByCommand()) return
+      if (isRunning && this.cmder.fileMaybeCreatedByCommand()) return
 
-      this.debug('监听到新建了文件 %f', filePath)
       if (sid) clearTimeout(sid)
-      newFiles.push(filePath)
-      sid = setTimeout(run, 300) // 再等待会儿，批量处理
+      if (newFiles.indexOf(filePath) < 0) {
+        newFiles.push(filePath)
+        this.debug('监听到新建了文件 %f', filePath)
+      }
+      sid = setTimeout(async () => {
+        isRunning = true
+        try {
+          await run()
+          isRunning = false
+        } catch (e) {
+          isRunning = false
+          this.error(e.message, e)
+        }
+      }, 300) // 再等待会儿，批量处理
     })
 
     this.debug('Application rootPath ' + this.rootPath)

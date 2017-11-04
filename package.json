@@ -52,11 +52,14 @@
   "activationEvents": [
     "*",
     "onLanguage:dtpl",
-    "onCommand:dot-template.createTemplateFile",
+    "onCommand:dot-template.createTemplateFiles",
     "onCommand:dot-template.createRelatedFiles",
     "onCommand:dot-template.undoOrRedo"
   ],
   "main": "./out/vscode",
+  "bin": {
+    "dtpl": "./out/bin.js"
+  },
   "icon": "res/images/icon.png",
   "contributes": {
     "configuration": {
@@ -144,7 +147,7 @@
     },
     "commands": [
       {
-        "command": "dot-template.createTemplateFile",
+        "command": "dot-template.createTemplateFiles",
         "title": "DTPL: Create template files"
       },
       {
@@ -158,7 +161,7 @@
     ],
     "keybindings": [
       {
-        "command": "dot-template.createTemplateFile",
+        "command": "dot-template.createTemplateFiles",
         "key": "ctrl+k ctrl+p",
         "mac": "cmd+k cmd+p"
       },
@@ -195,6 +198,7 @@
     ]
   },
   "devDependencies": {
+    "@types/chokidar": "~1.7.3",
     "@types/ejs": "~2.3.33",
     "@types/fs-extra": "~4.0.2",
     "@types/inquirer": "~0.0.35",
@@ -207,6 +211,7 @@
     "vscode": "^1.1.5"
   },
   "dependencies": {
+    "chokidar": "~1.7.0",
     "ejs": "~2.5.7",
     "fs-extra": "~4.0.2",
     "inquirer": "~3.3.0",

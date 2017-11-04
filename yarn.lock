@@ -2,6 +2,12 @@
 # yarn lockfile v1
 
 
+"@types/chokidar@~1.7.3":
+  version "1.7.3"
+  resolved "http://registry.npm.taobao.org/@types/chokidar/download/@types/chokidar-1.7.3.tgz#ca87a53aa596c01eb93237ab4055edf71dcb9ca6"
+  dependencies:
+    "@types/node" "*"
+
 "@types/ejs@~2.3.33":
   version "2.3.33"
   resolved "http://registry.npm.taobao.org/@types/ejs/download/@types/ejs-2.3.33.tgz#0a4e0a7aeee09944154b06ce5a2ac6a118f92b00"
@@ -480,7 +486,7 @@ chalk@^2.0.0:
     escape-string-regexp "^1.0.5"
     supports-color "^4.0.0"
 
-chokidar@^1.6.0:
+chokidar@^1.6.0, chokidar@~1.7.0:
   version "1.7.0"
   resolved "http://registry.npm.taobao.org/chokidar/download/chokidar-1.7.0.tgz#798e689778151c8076b4b360e5edd28cda2bb468"
   dependencies:

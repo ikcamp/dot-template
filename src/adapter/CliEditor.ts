@@ -3,9 +3,9 @@ import * as inquirer from 'inquirer'
 
 export class CliEditor extends Editor {
 
-  constructor(rootPath: string) {
+  constructor(rootPath: string, debug: boolean = false) {
     super(rootPath)
-    this.configuration.debug = true
+    this.configuration.debug = debug
   }
 
   async confirm(message: string): Promise<boolean> {

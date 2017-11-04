@@ -9,8 +9,11 @@ import * as path from 'path'
 import * as os from 'os'
 import * as assert from 'assert'
 
+import {commands} from './apps/cli/'
+
 const packagePath = findup.pkg(__dirname)
 const rootPath = path.dirname(packagePath)
+const vscodeEntryPath = path.resolve(rootPath, 'src', 'vscode.ts')
 const readmePath = path.join(rootPath, 'README.md')
 const interfacePath = path.join(rootPath, 'src', 'common', 'interface.ts')
 const dataPath = path.join(rootPath, 'src', 'common', 'data.ts')
@@ -23,33 +26,32 @@ interface IConfig {
 }
 const config: IConfig = require('./config/config.json')
 
-const injectable = process.cwd().indexOf(rootPath) === 0
+const injectCommand = process.cwd().indexOf(rootPath) !== 0 ? {} : {
+  inject: {
+    desc: xlog.format('根据 %csrc/config/config.json%c 文件的配置，给项目其它地方注入合适的值', 'yellow', 'reset'),
+    cmd: function() {
+      injectReadme(config)
+      injectInterfaceAndData(config)
+      injectPackageAndVscodeEntry(config)
+    }
+  }
+}
 
 cli({
   usage: './bin [options] <command>'
 })
 .commands({
-  inject: {
-    desc: injectable
-      ? xlog.format('根据 %csrc/config/config.json%c 文件的配置，给项目其它地方注入合适的值', 'yellow', 'reset')
-      : '仅供内部程序使用，调用无效',
-    cmd: function(res) {
-      if (injectable) {
-        injectReadme(config)
-        injectInterfaceAndData(config)
-        injectPackage(config)
-      } else {
-        this.error('此命令仅供内部程序使用')
-      }
-    }
-  }
+  ...commands,
+  ...injectCommand
 })
 .parse(function() {
   return this.help()
 })
 
-function injectPackage({name, options, commands: cs}: IConfig) {
+function injectPackageAndVscodeEntry({name, options, commands: cs}: IConfig) {
   // configuration commands keybindings
+
+  let registerCommands: string[] = []
 
   let configuration = {
     title: name,
@@ -68,6 +70,7 @@ function injectPackage({name, options, commands: cs}: IConfig) {
     if (c.key || c.mac) keybindings.push({command, key: c.key, mac: c.mac})
 
     activationEvents.push(`onCommand:${command}`)
+    registerCommands.push(`vscode.commands.registerCommand('${command}', app.${key})`)
     return {command, title: cs[key].title}
   }, {})
 
@@ -90,6 +93,8 @@ function injectPackage({name, options, commands: cs}: IConfig) {
     fs.writeFileSync(packagePath, JSON.stringify(newPkg, null, 2))
     info(`注入文件 ${relative} 成功`)
   }
+
+  inject(vscodeEntryPath, {commands: registerCommands.join(',\n')})
 }
 
 function injectInterfaceAndData({data}: IConfig) {
