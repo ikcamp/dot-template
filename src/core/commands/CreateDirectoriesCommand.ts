@@ -7,19 +7,21 @@ import {Template} from '../file/'
 import {series} from '../common'
 
 export class CreateDirectoriesCommand extends Command {
-  private templates: Template[]
+  private folders: string[]
   private exists: boolean[] = []
 
   constructor(folders: string[], noInitError: boolean, app: Application, options: ICommandInitOptions) {
     super('CreateDirectoriesCommand', app, options)
-    let templates: Template[] = []
-    this.filter(folders, true).forEach(f => {
-      let template = this.app.createSource(f).match(true)
-      if (template) templates.push(template)
-    })
+    folders = this.filter(folders, true)
 
-    if (templates.length) {
-      this.templates = templates
+    // let templates: Template[] = []
+    // .forEach(f => {
+    //   let template = this.app.createSource(f).match(true)
+    //   if (template) templates.push(template)
+    // })
+
+    if (folders.length) {
+      this.folders = folders
     } else {
       this.invalid = true
       if (!noInitError) this.app.error('无任何可创建的有效文件夹：文件路径需要在项目内，并且文件夹需要不存在，或文件夹内无任何文件')
@@ -29,15 +31,22 @@ export class CreateDirectoriesCommand extends Command {
   async execute(): Promise<boolean> {
     let {app} = this
     let {render, editor} = app
-    await series(this.templates, async (tpl) => {
+    await series(this.folders, async (toDir) => {
+      let exists = fs.existsSync(toDir)
+      if (!exists) fs.mkdirpSync(toDir)
+
+      let tpl = this.app.createSource(toDir).match(true) as Template
+      if (!tpl) {
+        this.debug('目录 %f 没有匹配的模板', toDir)
+        return
+      }
+
       let fromDir = tpl.filePath
-      let toDir = tpl.source.filePath
 
       let copiedFiles: string[] = []
 
       this.debug('开始复制目录 %f => %f', fromDir, toDir)
-      let exists = fs.existsSync(toDir)
-      if (!exists) fs.mkdirpSync(toDir)
+
       this.exists.push(exists)
 
       await walk(fromDir, async (rawName: string, fromPath: string, stats: fs.Stats) => {
@@ -98,8 +107,7 @@ export class CreateDirectoriesCommand extends Command {
   }
 
   async rollback(): Promise<boolean> {
-    await series(this.templates, async (tpl, index) => {
-      let toDir = tpl.source.filePath
+    await series(this.folders, async (toDir, index) => {
       this.debug('删除目录 %f 的文件', toDir)
       await this.remove(toDir, !this.exists[index])
     })

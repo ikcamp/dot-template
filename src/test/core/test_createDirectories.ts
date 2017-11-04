@@ -26,11 +26,11 @@ describe('createDirectories init', () => {
     await createDir('../xx', false, false)
   })
 
-  it('should return false if directory not exists but not template', async () => {
-    await createDir('xx', false, false)
+  it('should return true if directory not exists and not template', async () => {
+    await createDir('xx', false, true)
   })
-  it('should return false if directory is empty but not template', async () => {
-    await createDir('xx', true, false)
+  it('should return true if directory is empty and not template', async () => {
+    await createDir('xx', true, true)
   })
 
   it('should return true if directory not exists and has template', async () => {

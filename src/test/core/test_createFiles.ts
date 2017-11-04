@@ -4,12 +4,12 @@ import {Project, File, assert} from './inc/'
 let pro: Project
 async function createFile(name: string, content: string, result: boolean, open?: boolean): Promise<File>
 async function createFile(name: string, result: boolean, open?: boolean): Promise<File>
-async function createFile(name: string, contentOrResult: string | boolean, resultOrOpen: boolean, open?: boolean): Promise<File> {
+async function createFile(name: string, contentOrResult: boolean | string, resultOrOpen?: boolean, open?: boolean): Promise<File> {
   let content: string | false
   let result: boolean
   if (typeof contentOrResult === 'string') {
     content = contentOrResult
-    result = resultOrOpen
+    result = !!resultOrOpen
   } else {
     content = false
     result = contentOrResult

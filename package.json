@@ -7,7 +7,7 @@
   "scripts": {
     "clear": "rm -rf out",
     "vscode:prepublish": "npm run build",
-    "build": "npm run clear && tsc -p ./",
+    "build": "npm run clear && tsc -p ./ && chmod a+x out/bin.js",
     "watch": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "nyc _mocha -R dot src/test/core/test*",
@@ -203,12 +203,12 @@
     "@types/fs-extra": "~4.0.2",
     "@types/inquirer": "~0.0.35",
     "@types/minimatch": "~3.0.1",
-    "@types/mocha": "^2.2.42",
-    "@types/node": "^7.0.43",
+    "@types/mocha": "~2.2.42",
+    "@types/node": "~7.0.43",
     "mocha": "~4.0.1",
     "nyc": "~11.2.1",
-    "typescript": "^2.5.3",
-    "vscode": "^1.1.5"
+    "typescript": "~2.6.1",
+    "vscode": "~1.1.5"
   },
   "dependencies": {
     "chokidar": "~1.7.0",
@@ -216,7 +216,7 @@
     "fs-extra": "~4.0.2",
     "inquirer": "~3.3.0",
     "minimatch": "~3.0.4",
-    "mora-scripts": "^1.6.12",
+    "mora-scripts": "~1.6.12",
     "nunjucks": "~3.0.1",
     "ts-node": "~3.3.0",
     "tslib": "~1.8.0"

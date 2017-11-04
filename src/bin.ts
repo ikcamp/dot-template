@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import * as info from 'mora-scripts/libs/sys/info'
 import * as error from 'mora-scripts/libs/sys/error'
 import * as cli from 'mora-scripts/libs/tty/cli'
@@ -11,12 +13,7 @@ import * as assert from 'assert'
 
 import {commands} from './apps/cli/'
 
-const packagePath = findup.pkg(__dirname)
-const rootPath = path.dirname(packagePath)
-const vscodeEntryPath = path.resolve(rootPath, 'src', 'vscode.ts')
-const readmePath = path.join(rootPath, 'README.md')
-const interfacePath = path.join(rootPath, 'src', 'common', 'interface.ts')
-const dataPath = path.join(rootPath, 'src', 'common', 'data.ts')
+let rootPath: string
 
 interface IConfig {
   name: string
@@ -24,15 +21,22 @@ interface IConfig {
   commands: {[key: string]: {title: string, key?: string, mac?: string}}
   options: {[key: string]: {default?: any, type: string, description: string}}
 }
-const config: IConfig = require('./config/config.json')
 
-const injectCommand = process.cwd().indexOf(rootPath) !== 0 ? {} : {
+let injectCommand = process.cwd() !== path.dirname(__dirname) ? {} : {
   inject: {
     desc: xlog.format('根据 %csrc/config/config.json%c 文件的配置，给项目其它地方注入合适的值', 'yellow', 'reset'),
     cmd: function() {
-      injectReadme(config)
-      injectInterfaceAndData(config)
-      injectPackageAndVscodeEntry(config)
+      let packagePath = findup.pkg(__dirname)
+      rootPath = path.dirname(packagePath)
+
+      let vscodeEntryPath = path.resolve(rootPath, 'src', 'vscode.ts')
+      let readmePath = path.join(rootPath, 'README.md')
+      let interfacePath = path.join(rootPath, 'src', 'common', 'interface.ts')
+      let dataPath = path.join(rootPath, 'src', 'common', 'data.ts')
+      let config: IConfig = require('./config/config.json')
+      injectReadme(config, readmePath)
+      injectInterfaceAndData(config, interfacePath, dataPath)
+      injectPackageAndVscodeEntry(config, packagePath, vscodeEntryPath)
     }
   }
 }
@@ -48,7 +52,7 @@ cli({
   return this.help()
 })
 
-function injectPackageAndVscodeEntry({name, options, commands: cs}: IConfig) {
+function injectPackageAndVscodeEntry({name, options, commands: cs}: IConfig, packagePath: string, vscodeEntryPath: string) {
   // configuration commands keybindings
 
   let registerCommands: string[] = []
@@ -97,7 +101,7 @@ function injectPackageAndVscodeEntry({name, options, commands: cs}: IConfig) {
   inject(vscodeEntryPath, {commands: registerCommands.join(',\n')})
 }
 
-function injectInterfaceAndData({data}: IConfig) {
+function injectInterfaceAndData({data}: IConfig, interfacePath: string, dataPath: string) {
   let dataExplain: string[] = []
   let basicData = Object.keys(data).reduce((lines: string[], key) => {
     let d = data[key]
@@ -114,7 +118,7 @@ function injectInterfaceAndData({data}: IConfig) {
   inject(dataPath, {dataExplain: dataExplain.join(',' + os.EOL)})
 }
 
-function injectReadme({options, data, commands: cs, name}: IConfig) {
+function injectReadme({options, data, commands: cs, name}: IConfig, readmePath: string) {
   // 项目配置：
   let configure = Object.keys(options).map(key => {
     let defaultValue = !options[key].default ? '' : os.EOL + `     默认值： ${code(options[key].default, true)}`
