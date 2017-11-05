@@ -320,7 +320,7 @@ export interface IBasicData {
    */
   module_name: string
   /**
-   * 创建 related 文件时，原文件的 data 对象；或者创建文件夹模板内的文件时，文件夹的 data 对象
+   * 创建 related 文件时，原文件的 IData 对象；或者创建文件夹模板内的文件时，文件夹的 IData 对象
    * @type {IData}
    */
   ref?: IData

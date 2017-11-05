@@ -64,6 +64,6 @@ export const dataExplain = {
   ModuleName: {desc: '单词首字母都大写的形式的 fileName', type: 'string'},
   MODULE_NAME: {desc: '所有字母都大写，中间以下划线连接的 fileName', type: 'string'},
   module_name: {desc: '所有字母都小写，中间以下划线连接的 fileName', type: 'string'},
-  ref: {desc: '创建 related 文件时，原文件的 data 对象；或者创建文件夹模板内的文件时，文件夹的 data 对象', type: 'IData'}
+  ref: {desc: '创建 related 文件时，原文件的 IData 对象；或者创建文件夹模板内的文件时，文件夹的 IData 对象', type: 'IData'}
   /*# INJECT_END #*/
 }

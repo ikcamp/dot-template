@@ -33,7 +33,7 @@ let injectCommand = process.cwd() !== path.dirname(__dirname) ? {} : {
       let readmePath = path.join(rootPath, 'README.md')
       let interfacePath = path.join(rootPath, 'src', 'common', 'interface.ts')
       let dataPath = path.join(rootPath, 'src', 'common', 'data.ts')
-      let config: IConfig = require('./config/config.json')
+      let config: IConfig = require(rootPath + '/src/config/config.json')
       injectReadme(config, readmePath)
       injectInterfaceAndData(config, interfacePath, dataPath)
       injectPackageAndVscodeEntry(config, packagePath, vscodeEntryPath)
@@ -134,8 +134,8 @@ function injectReadme({options, data, commands: cs, name}: IConfig, readmePath: 
         lines.push(`快捷键： ${code(command.key)}`)
       } else {
         lines.push(
-          `    win 快捷键： ${code(command.key)}`,
-          `    mac 快捷键： ${code(command.mac)}`
+          `    - win 快捷键： ${code(command.key)}`,
+          `    - mac 快捷键： ${code(command.mac)}`
         )
       }
     }

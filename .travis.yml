@@ -3,7 +3,10 @@ env: CI=true
 sudo: false
 
 install: npm install
-before_script: npm run build
+before_script:
+  - npm run vscode:postinstall
+  - npm run build
+
 script: npm test
 
 os:
