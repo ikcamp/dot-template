@@ -1,4 +1,6 @@
-# dot-template vscode extension
+# dot-template
+
+[![Build Status][travis-image]][travis-url]
 
 **自动根据预定义好的合适的模板文件及当前环境变量来快速生成新的文件的内容**
 
@@ -82,3 +84,6 @@ If you have any requirements or dependencies, add a section describing those and
 Calling out known issues can help limit users opening duplicate issues against your extension.
 -->
 
+
+[travis-image]: https://travis-ci.org/qiu8310/dot-template.svg?branch=master
+[travis-url]: https://travis-ci.org/qiu8310/dot-template
