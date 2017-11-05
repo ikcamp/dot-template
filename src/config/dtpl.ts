@@ -12,6 +12,7 @@ export default function(source: _.Source): _.IDtplConfig {
 
         localData: {
           interface: path.resolve(source.app.dotTemplateRootPath, 'out', 'common', 'interface')
+            .replace('\\', '/') // window 上的路径 \ 需要换成 /
         },
 
         // 根据用户当前正在创建或编辑的文件的信息来判断是否需要使用此模板来处理此文件

@@ -126,7 +126,8 @@ export class Source {
         } else {
           let stats = fs.statSync(templatePath)
           if (stats.isFile() && isTemplateDirectory || stats.isDirectory() && !isTemplateDirectory) {
-            this.app.warning(`模板 ${t.name} 对应的文件 %f ${isTemplateDirectory ? '应该是目录' : '不应该是目录'}`, templatePath)
+            // 很正常，不要报错了
+            // this.app.warning(`模板 ${t.name} 对应的文件 %f ${isTemplateDirectory ? '应该是目录' : '不应该是目录'}`, templatePath)
             found = false
           }
         }

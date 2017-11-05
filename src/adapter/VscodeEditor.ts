@@ -16,7 +16,7 @@ export class VscodeEditor extends Editor {
   constructor() {
     super(vscode.workspace.rootPath || process.cwd())
     this.fileSystemWatcher = vscode.workspace.createFileSystemWatcher('**/*', false, true, true)
-    this.fileSystemWatcher.onDidCreate(uri => this.app.emitNewFile(uri.path))
+    this.fileSystemWatcher.onDidCreate(uri => this.app.emitNewFile(uri.fsPath))
     this.setConfiguration()
     this.configListener = vscode.workspace.onDidChangeConfiguration(this.setConfiguration.bind(this))
   }
