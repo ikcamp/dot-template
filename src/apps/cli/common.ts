@@ -1,6 +1,7 @@
 import * as os from 'os'
 import * as path from 'path'
 import * as events from 'events'
+import * as findup from 'mora-scripts/libs/fs/findup'
 import { StringDecoder, NodeStringDecoder } from 'string_decoder'
 import * as error from 'mora-scripts/libs/sys/error'
 import {Application} from '../../core/Application'
@@ -16,6 +17,15 @@ export type IParserMessageType = 'createTemplateFiles' | 'createRelatedFiles' | 
 export interface IParserMessage {
   type: IParserMessageType
   data: any
+}
+
+export function getRootPath(rootPath?: string | null): string {
+  if (typeof rootPath === 'string' && rootPath) return path.resolve(rootPath)
+  try {
+    return path.dirname(findup.pkg())
+  } catch(e) {
+    return path.resolve(process.cwd())
+  }
 }
 
 export class Parser extends events.EventEmitter {

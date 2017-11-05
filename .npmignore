@@ -2,11 +2,10 @@
 .vscode-test/**
 out/test/**
 out/**/*.map
-out/bin.js
 src/**
-.npmignore
 .gitignore
 .gitmessage
+.vscodeignore
 tsconfig.json
 vsc-extension-quickstart.md
 vsc-commands.md

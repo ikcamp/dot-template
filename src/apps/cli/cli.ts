@@ -2,9 +2,10 @@ import * as cli from 'mora-scripts/libs/tty/cli'
 import * as path from 'path'
 import {Watcher, IWatcherOptions} from './Watcher'
 import {Client, IClientOptions} from './Client'
+import {getRootPath} from './common'
 
 const commonOpts = {
-  'r | rootPath': '<string>  指定项目根目录，没有指定则使用当前目录',
+  'r | rootPath': '<string>  指定项目根目录，没有指定则使用 package.json 文件所在目录或者当前目录',
   'd | debug':    '<boolean> 调试模式（无 watch 时才有效）',
   's | socket':   '<string>  指定 socket 文件路径'
 }
@@ -18,6 +19,10 @@ export const commands = {
     desc: '新建文件夹',
     cmd: mkdir
   },
+  related: {
+    desc: '创建指定的文件的关联文件',
+    cmd: related
+  },
   revoke: {
     desc: '撤销或重做上一次命令',
     cmd: revoke
@@ -30,7 +35,7 @@ export const commands = {
 
 async function client(r: any, fn: (c: Client) => Promise<void>) {
   let opt: IClientOptions = {
-    rootPath: path.resolve(r.rootPath || process.cwd()),
+    rootPath: getRootPath(r.rootPath),
     debug: !!r.debug
   }
   if (r.socket) opt.socketFile = path.resolve(r.socket)
@@ -45,7 +50,8 @@ function resolve(files: string[]) {
 export function touch(topRes: any) {
   cli({
     usage: 'dtpl touch <files1, file2, ...>',
-    desc: '新建文本文件，并尝试查找模板，有合适的模板的话，则渲染模板内容到此文件上'
+    desc: '新建文本文件，并尝试查找模板，有合适的模板的话，则渲染模板内容到此文件上',
+    version: false
   })
   .options(commonOpts)
   .parse(topRes._, function(res) {
@@ -60,7 +66,8 @@ export function touch(topRes: any) {
 export function related(topRes: any) {
   cli({
     usage: 'dtpl related <file>',
-    desc: '新建文本文件，并尝试查找模板，有合适的模板的话，则渲染模板内容到此文件上'
+    desc: '新建文本文件，并尝试查找模板，有合适的模板的话，则渲染模板内容到此文件上',
+    version: false
   })
   .options(commonOpts)
   .parse(topRes._, function(res) {
@@ -75,7 +82,8 @@ export function related(topRes: any) {
 export function mkdir(topRes: any) {
   cli({
     usage: 'dtpl mkdir <dir1, dir2, ...>',
-    desc: '新建文件夹，并尝试查找模板，有合适的模板的话，则复制模板内的所有文件到此文件夹内'
+    desc: '新建文件夹，并尝试查找模板，有合适的模板的话，则复制模板内的所有文件到此文件夹内',
+    version: false
   })
   .options(commonOpts)
   .parse(topRes._, function(res) {
@@ -90,7 +98,8 @@ export function mkdir(topRes: any) {
 export function revoke(topRes: any) {
   cli({
     usage: 'dtpl revoke',
-    desc: '撤销或重做上一次命令'
+    desc: '撤销或重做上一次命令',
+    version: false
   })
   .parse(topRes._, function(res) {
     client(res, c => c.undoOrRedo())
@@ -103,7 +112,8 @@ export function watch(topRes: any) {
     desc: [
       '启动 watch 服务器，通过纯一的服务器来处理其它命令',
       '这样就可以回滚某个命令，同时可以支持自动监听文件变化'
-    ]
+    ],
+    version: false
   }).options({
     ...commonOpts,
     'a | auto':     '<boolean> 自动监听 rootPath 中文件的变化'

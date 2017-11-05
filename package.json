@@ -9,10 +9,10 @@
     "vscode:prepublish": "npm run build",
     "build": "npm run clear && tsc -p ./ && chmod a+x out/bin.js",
     "watch": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
+    "vscode:postinstall": "node ./node_modules/vscode/bin/install",
     "test": "nyc _mocha -R dot src/test/core/test*",
     "report": "nyc report --reporter html --report-dir out/coverage",
-    "test:vscode": "npm run build && node ./node_modules/vscode/bin/test"
+    "vscode:test": "npm run build && node ./node_modules/vscode/bin/test"
   },
   "nyc": {
     "require": [

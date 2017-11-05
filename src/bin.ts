@@ -42,7 +42,7 @@ let injectCommand = process.cwd() !== path.dirname(__dirname) ? {} : {
 }
 
 cli({
-  usage: './bin [options] <command>'
+  usage: 'dtpl [options] <command>'
 })
 .commands({
   ...commands,
