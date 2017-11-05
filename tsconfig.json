@@ -20,8 +20,8 @@
     "lib": [
       "es2016"
     ],
-    "sourceMap": true,
-    "rootDir": "src"
+    // "rootDir": "src", // 指定 rootDir 会使 ts 在编译外部的 dtpl.ts 文件报错
+    "sourceMap": true
   },
   "exclude": [
     "node_modules",
