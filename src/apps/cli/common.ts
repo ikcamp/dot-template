@@ -10,7 +10,16 @@ export {Application} from '../../core/Application'
 export {CliEditor} from '../../adapter/CliEditor'
 
 export const config = {
-  socketFile: path.join(os.tmpdir(), 'dtpl.socket')
+  socketFile: getSocketFile(path.join(os.tmpdir(), 'dtpl.socket'))
+}
+
+export function getSocketFile(file: string) {
+  if (process.platform === 'win32') {
+    file = file.replace(/^\//, '')
+    file = file.replace(/\//g, '-')
+    file = '\\\\.\\pipe\\' + file
+  }
+  return file
 }
 
 export type IParserMessageType = 'createTemplateFiles' | 'createRelatedFiles' | 'createDirectories' | 'undoOrRedo'

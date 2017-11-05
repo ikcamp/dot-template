@@ -141,6 +141,13 @@ dot-template 设计的初衷是 vscode 的插件，但在写代码的过程中�
   dtpl watch
   ```
 
+注意：由于监听文件变化的组件 chokidar 在 window 下好像不是很好，所以 window 下用 watch 模式体验并不好。不过 window 用户可以用下面命令来创建文件或文件夹：
+
+```bash
+dtpl touch your_file
+dtpl mkdir your_dir
+```
+
 
 **接下来，你在项目里新建文件或文件夹，都会像在 vscode 里一样，会自动寻找 `.dtpl` 文件夹下合适的模板**
 
