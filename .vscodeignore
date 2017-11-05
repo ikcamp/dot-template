@@ -15,3 +15,5 @@ yarn.lock
 coverage/
 .nyc_output/
 .DS_Store
+.travis.yml
+appveyor.yml
