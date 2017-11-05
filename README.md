@@ -3,8 +3,24 @@
 [![Travis Build Status][travis-image]][travis-url]
 [![Appveyor Build Status][appveyor-image]][appveyor-url]
 
-**自动根据预定义好的合适的模板文件及当前环境变量来快速生成新的文件的内容**
+**新建文件或文件夹时，根据预定义的配置和模板，自动向新文件里插入模板内容，或在新文件夹里生成新文件**
 
+
+## 主要功能
+
+* 自动写入项目模板中的文件
+* 自动注入文件模板到新建的文件中
+* 生成某一文件的关联文件
+
+
+## 如何使用
+
+1. vscode 插件中查找并安装 `dot-template`
+2. 重启 vscode
+3. 在当前打开的项目中的根目录上创建一个 `.dtpl` 的文件夹（然后跟随 vscode 弹出的提示做即可）
+
+
+[更多详情请参考此](./ARTICLE_ABOUT_IT.md)
 
 
 <!--
