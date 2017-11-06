@@ -207,10 +207,10 @@
     "@types/node": "~7.0.43",
     "mocha": "~4.0.1",
     "nyc": "~11.2.1",
-    "typescript": "~2.6.1",
     "vscode": "~1.1.5"
   },
   "dependencies": {
+    "typescript": "~2.6.1",
     "chokidar": "~1.7.0",
     "ejs": "~2.5.7",
     "fs-extra": "~4.0.2",

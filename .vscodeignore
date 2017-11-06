@@ -12,9 +12,9 @@ vsc-extension-quickstart.md
 vsc-commands.md
 TODO.md
 yarn.lock
-coverage/
-.nyc_output/
+coverage/**
+.nyc_output/**
 .DS_Store
 .travis.yml
 appveyor.yml
-res/doc-images
+res/doc-images/**
