@@ -113,7 +113,7 @@ Calling out known issues can help limit users opening duplicate issues against y
 -->
 
 
-[travis-image]: https://travis-ci.org/qiu8310/dot-template.svg?branch=master
-[travis-url]: https://travis-ci.org/qiu8310/dot-template
+[travis-image]: https://travis-ci.org/ikcamp/dot-template.svg?branch=master
+[travis-url]: https://travis-ci.org/ikcamp/dot-template
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/t6j5n99l5h251c2l?svg=true
-[appveyor-url]: https://ci.appveyor.com/project/qiu8310/dot-template
+[appveyor-url]: https://ci.appveyor.com/project/ikcamp/dot-template

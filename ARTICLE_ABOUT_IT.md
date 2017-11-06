@@ -405,7 +405,7 @@ dtpl mkdir your_dir
 [generator-node-babel]:       https://github.com/qiu8310/generator-node-babel
 [generator-jquerify]:         https://github.com/qiu8310/generator-jquerify
 [generator-nody]:             https://github.com/qiu8310/generator-nody
-[dtpl]:                       https://github.com/qiu8310/dot-template
-[dtpl-todo]:                  https://github.com/qiu8310/dot-template/blob/master/TODO.md
+[dtpl]:                       https://github.com/ikcamp/dot-template
+[dtpl-todo]:                  https://github.com/ikcamp/dot-template/blob/master/TODO.md
 [dtpl-vscode]:                https://marketplace.visualstudio.com/items?itemName=qiu8310.dot-template
 [uml]:                        https://n1image.hjfile.cn/res7/2017/11/05/c3e2b522783ce717103b15dd28d230e3.png
