@@ -73,6 +73,7 @@ export function findJsRelatedFiles(jsfile: string, fileContent: string): string[
       let file = path.resolve(path.dirname(jsfile), from)
 
       // 如果没有后缀，要加上当前文件的后缀
+      // TODO: 有可能是文件夹
       if (!(/\.\w+$/.test(file))) file += path.extname(jsfile)
 
       if (result.indexOf(file) < 0) result.push(file)

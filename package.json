@@ -66,11 +66,6 @@
       "title": "dot-template",
       "type": "object",
       "properties": {
-        "dot-template.debug": {
-          "type": "boolean",
-          "default": false,
-          "description": "开启调试模式，会在 DEBUG CONSOLE 输出很多信息；修改了此配置需要重启编辑器才能生效"
-        },
         "dot-template.commandInvalidTimeout": {
           "type": "number",
           "default": 60000,

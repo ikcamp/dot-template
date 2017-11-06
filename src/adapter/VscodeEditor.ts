@@ -26,7 +26,7 @@ export class VscodeEditor extends Editor {
     this.EOL = vscode.workspace.getConfiguration('files').get('eol', os.EOL)
 
     this.configuration = {
-      debug: c.get('debug', false),
+      debug: false,
       commandInvalidTimeout: c.get('commandInvalidTimeout', 60000),
       dtplFolderName: c.get('dtplFolderName', '.dtpl'),
       minimatchOptions: c.get('minimatchOptions') || {matchBase: true, nocomment: true, dot: true},
@@ -148,10 +148,9 @@ export class VscodeEditor extends Editor {
   }
   error(message: string, e?: Error | any) {
     let hasError = !!e
-    let tip = hasError ? '（打开输出面板可以看到详细信息）' : ''
+    let tip = hasError ? '（如果是TS编译错误建议使用JS配置文件）' : ''
 
     message = message.split(/\r?\n/)[0] // 取第一行
-
     vscode.window.showErrorMessage(`[dot-template] ${message} ${tip}`)
     if (hasError) console.error(e)
   }

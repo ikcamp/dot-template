@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import * as fs from 'fs-extra'
-import {findJsRelatedFiles} from '../../common/helper'
+// import * as fs from 'fs-extra'
+// import {findJsRelatedFiles} from '../../common/helper'
 import {Application} from '../../core/Application'
 import {VscodeEditor} from '../../adapter/VscodeEditor'
 
@@ -40,12 +40,12 @@ export class App {
       if (content.trim()) {
         // 开个小灶
         // js 文件可以自动检查引用了哪些不存在的文件，然后创建它们
-        if (dtpl.editor.isJsFileOrTsFile(currentfile)) {
-          let notExistFiiles = findJsRelatedFiles(currentfile, content).filter(f => !fs.existsSync(f))
-          if (notExistFiiles.length && await dtpl.createTemplateFiles(notExistFiiles, true)) {
-            return // 创建成功就不往下执行了
-          }
-        }
+        // if (dtpl.editor.isJsFileOrTsFile(currentfile)) {
+        //   let notExistFiiles = findJsRelatedFiles(currentfile, content).filter(f => !fs.existsSync(f))
+        //   if (notExistFiiles.length && await dtpl.createTemplateFiles(notExistFiiles, true)) {
+        //     return // 创建成功就不往下执行了
+        //   }
+        // }
 
         // 尝试创建关联文件
         if (await dtpl.createRelatedFiles(currentfile)) return
