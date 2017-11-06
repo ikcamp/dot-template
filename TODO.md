@@ -17,4 +17,7 @@
 * 发布后需要确认下在没有 tsconfig.json 文件时能否正常编译用户目录下的 dtpl.ts 文件
 
 
+* related 文件支持 inject 一些信息到原文件上，inject 支持 append
+
+
 官方示例大全 https://github.com/Microsoft/vscode-extension-samples
