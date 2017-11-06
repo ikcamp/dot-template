@@ -86,19 +86,22 @@
     "createTemplateFiles": {
       "title": "DTPL: Create template files",
       "key": "ctrl+k ctrl+p",
-      "mac": "cmd+k cmd+p"
+      "mac": "cmd+k cmd+p",
+      "desc": "创建模板文件 \n1. 如果当前编辑器没有打开的文件，则会弹出输入框，可以输入你要创建的文件；\n2. 如果当前打开的文件没内容，则会去寻找合适的模板来渲染；\n3. 如果当前打开的文件有内容，则会去寻找合适的关联文件来创建"
     },
 
     "createRelatedFiles": {
       "title": "DTPL: Create related files",
       "key": "ctrl+k ctrl+s",
-      "mac": "cmd+k cmd+s"
+      "mac": "cmd+k cmd+s",
+      "desc": "创建当前编辑器打开的文件的关联文件，如果当前编辑器没打开任何文件，则会报错"
     },
 
     "undoOrRedo": {
       "title":"DTPL: Undo or Redo last action",
       "key": "ctrl+k ctrl+u",
-      "mac": "cmd+k cmd+u"
+      "mac": "cmd+k cmd+u",
+      "desc": "撤销或重做上次命令所做的所有修改，并且一分钟内才有效，超不一分钟无法撤销或重做（主要为了避免误操作）"
     }
   },
 

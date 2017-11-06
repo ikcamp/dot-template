@@ -18,7 +18,7 @@ let rootPath: string
 interface IConfig {
   name: string
   data: {[key: string]: {optional?: boolean, type: string, description: string}}
-  commands: {[key: string]: {title: string, key?: string, mac?: string}}
+  commands: {[key: string]: {title: string, key?: string, mac?: string, desc: string}}
   options: {[key: string]: {default?: any, type: string, description: string}}
 }
 
@@ -31,10 +31,11 @@ let injectCommand = process.cwd() !== path.dirname(__dirname) ? {} : {
 
       let vscodeEntryPath = path.resolve(rootPath, 'src', 'vscode.ts')
       let readmePath = path.join(rootPath, 'README.md')
+      let articlePath = path.join(rootPath, 'ARTICLE_ABOUT_IT.md')
       let interfacePath = path.join(rootPath, 'src', 'common', 'interface.ts')
       let dataPath = path.join(rootPath, 'src', 'common', 'data.ts')
       let config: IConfig = require(rootPath + '/src/config/config.json')
-      injectReadme(config, readmePath)
+      injectReadme(config, readmePath, articlePath)
       injectInterfaceAndData(config, interfacePath, dataPath)
       injectPackageAndVscodeEntry(config, packagePath, vscodeEntryPath)
     }
@@ -118,7 +119,7 @@ function injectInterfaceAndData({data}: IConfig, interfacePath: string, dataPath
   inject(dataPath, {dataExplain: dataExplain.join(',' + os.EOL)})
 }
 
-function injectReadme({options, data, commands: cs, name}: IConfig, readmePath: string) {
+function injectReadme({options, data, commands: cs, name}: IConfig, readmePath: string, articlePath: string) {
   // 项目配置：
   let configure = Object.keys(options).map(key => {
     let defaultValue = !options[key].default ? '' : os.EOL + `     默认值： ${code(options[key].default, true)}`
@@ -138,6 +139,7 @@ function injectReadme({options, data, commands: cs, name}: IConfig, readmePath: 
           `    - mac 快捷键： ${code(command.mac)}`
         )
       }
+      lines.push('\n  ' + command.desc.replace(/\n/mg, '\n  ') + '\n')
     }
     return lines.join(os.EOL)
   }).join(os.EOL)
@@ -150,6 +152,7 @@ function injectReadme({options, data, commands: cs, name}: IConfig, readmePath: 
   })))
 
   inject(readmePath, {configure, commands, environment})
+  inject(articlePath, {configure, commands, environment})
 }
 
 function inject(file: string, data: {[key: string]: any}) {

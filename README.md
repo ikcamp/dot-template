@@ -19,7 +19,6 @@
 2. 重启 vscode
 3. 在当前打开的项目中的根目录上创建一个 `.dtpl` 的文件夹（然后跟随 vscode 弹出的提示做即可）
 
-
 [更多详情请参考此](./ARTICLE_ABOUT_IT.md)
 
 
@@ -57,12 +56,24 @@ If you have any requirements or dependencies, add a section describing those and
 * `createTemplateFiles`: DTPL: Create template files
     - win 快捷键： `ctrl+k ctrl+p`
     - mac 快捷键： `cmd+k cmd+p`
+
+  创建模板文件
+  1. 如果当前编辑器没有打开的文件，则会弹出输入框，可以输入你要创建的文件；
+  2. 如果当前打开的文件没内容，则会去寻找合适的模板来渲染；
+  3. 如果当前打开的文件有内容，则会去寻找合适的关联文件来创建
+
 * `createRelatedFiles`: DTPL: Create related files
     - win 快捷键： `ctrl+k ctrl+s`
     - mac 快捷键： `cmd+k cmd+s`
+
+  创建当前编辑器打开的文件的关联文件，如果当前编辑器没打开任何文件，则会报错
+
 * `undoOrRedo`: DTPL: Undo or Redo last action
     - win 快捷键： `ctrl+k ctrl+u`
     - mac 快捷键： `cmd+k cmd+u`
+
+  撤销或重做上次命令所做的所有修改，并且一分钟内才有效，超不一分钟无法撤销或重做（主要为了避免误操作）
+
 <!--# INJECT_END #-->
 
 <a id="data"></a>

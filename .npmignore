@@ -16,3 +16,4 @@ coverage/
 .DS_Store
 .travis.yml
 appveyor.yml
+res/doc-images
