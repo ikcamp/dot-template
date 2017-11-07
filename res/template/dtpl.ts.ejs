@@ -1,7 +1,12 @@
 import * as _ from '<%=ref.interface%>'
 import * as path from 'path'
 
-// 注意：建议将此文件编译成 js 文件放于同目录下，这样 dot-template 速度可能会更快！
+// 注意：
+//    虽然 ts 文件有很强的语法提示，但默认情况下 dot-template 并不支持，你需要把它编译成
+//    js 文件放在同目录下
+//
+//    不过 dot-template 也是可以支持处理 ts 文件的，需要你在当前项目中安装  `ts-node`
+//    和 `typescript` 组件
 
 export default function(source: _.Source): _.IDtplConfig {
   return {
@@ -116,7 +121,7 @@ export default function(source: _.Source): _.IDtplConfig {
      *    关联文件可以通过 ref 来引用源文件的所有 data 数据
      */
     globalData: {
-      projectName: '<%=ref.fileName%>'
+      projectName: '<%=ref.dirName%>'
     }
   }
 }

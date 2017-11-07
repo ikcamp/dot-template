@@ -2,7 +2,6 @@
 .vscode-test/**
 out/test/**
 out/**/*.map
-out/bin.js
 src/**
 .npmignore
 .gitignore

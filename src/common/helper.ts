@@ -1,12 +1,5 @@
 import * as path from 'path'
 
-let requireTsFileEnabled = false
-export function enableRequireTsFile() {
-  if (requireTsFileEnabled) return
-  require('ts-node/register')
-  requireTsFileEnabled = true
-}
-
 /**
  * 按先后顺序一个个用 run 函数来运行 tasks 中的字段
  *

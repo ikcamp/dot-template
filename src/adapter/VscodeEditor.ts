@@ -148,10 +148,8 @@ export class VscodeEditor extends Editor {
   }
   error(message: string, e?: Error | any) {
     let hasError = !!e
-    let tip = hasError ? '（如果是TS编译错误建议使用JS配置文件）' : ''
-
     message = message.split(/\r?\n/)[0] // 取第一行
-    vscode.window.showErrorMessage(`[dot-template] ${message} ${tip}`)
+    vscode.window.showErrorMessage(`[dot-template] ${message}`)
     if (hasError) console.error(e)
   }
 }

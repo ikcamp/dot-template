@@ -141,7 +141,7 @@ dot-template 支持三种模板：`nunjunks`、`ejs`、以及 dot-template 自�
 
 ### 关于配置文件
 
-配置文件需要在 `.dtpl` 文件夹下，并且命名为 `dtpl.js` 或 `dtpl.ts`，用 ts 文件会有很强的语法提示，但有 js 文件会有很强的处理速度，建议用 ts 写，但写完之后就用 `tsc` 编译成 js，或者直接用 `tsc --watch --outFile dtpl.js dtpl.ts` 命令，这样只要你修改了 ts 文件，就自动更新 js 文件；有 js 文件系统会优先加载 js。
+配置文件需要在 `.dtpl` 文件夹下，并且命名为 `dtpl.js` 或 `dtpl.ts`，用 ts 文件会有很强的语法提示，并且需要在当前项目中安装 `ts-node` 和 `typescript` 组件；但用 js 文件会有很强的处理速度，建议用 ts 写，但写完之后就用 `tsc` 编译成 js，或者直接用 `tsc --watch dtpl.ts` 命令，这样只要你修改了 ts 文件，就自动更新 js 文件；有 js 文件系统会优先加载 js。
 
 配置文件 `dtpl.js` 大概结构是这样的：
 
@@ -325,7 +325,7 @@ dtpl mkdir your_dir
     - win 快捷键： `ctrl+k ctrl+p`
     - mac 快捷键： `cmd+k cmd+p`
 
-  创建模板文件 
+  创建模板文件
   1. 如果当前编辑器没有打开的文件，则会弹出输入框，可以输入你要创建的文件；
   2. 如果当前打开的文件没内容，则会去寻找合适的模板来渲染；
   3. 如果当前打开的文件有内容，则会去寻找合适的关联文件来创建
@@ -371,26 +371,26 @@ dtpl mkdir your_dir
 ### 渲染模板时的基本的环境变量 IData
 
 <!--# INJECT_START environment #-->
-  **Variablle**        |  **Type**                 |  **Nullable**   |  **Description**                                             
+  **Variablle**        |  **Type**                 |  **Nullable**   |  **Description**
 -----------------------|---------------------------|-----------------|--------------------------------------------------------------
-  `rootPath`           |  `string`                 |                 |  项目根目录的绝对路径                                        
-  `npmPath`            |  `string`                 |                 |  项目下的 node_modules 目录的绝对路径                        
-  `date`               |  `string`                 |                 |  当前日期，格式：yyyy-mm-dd                                  
-  `time`               |  `string`                 |                 |  当前时间，格式: hh-mm                                       
-  `datetime`           |  `string`                 |                 |  当前日期和时间，格式：yyyy-mm-dd hh-mm                      
-  `user`               |  `string`                 |                 |  当前用户，通过读取环境变量中的 USER 字段而获取到的          
-  `pkg`                |  `{[key: string]: any}`   |                 |  当前项目的 package.json 所对应的 JSON 对象                  
-  `filePath`           |  `string`                 |                 |  当前文件的绝对路径                                          
-  `relativeFilePath`   |  `string`                 |                 |  当前文件相对于根目录的路径                                  
-  `fileName`           |  `string`                 |                 |  当前文件的名称，不带路径和后缀                              
-  `fileExt`            |  `string`                 |                 |  当前文件的后缀名                                            
-  `dirPath`            |  `string`                 |                 |  当前文件所在的目录的绝对路径                                
-  `dirName`            |  `string`                 |                 |  当前文件所在的目录的名称                                    
-  `rawModuleName`      |  `string`                 |                 |  fileName 的别名，即当前文件的名称（不含后缀）               
-  `moduleName`         |  `string`                 |                 |  驼峰形式的 fileName                                         
-  `ModuleName`         |  `string`                 |                 |  单词首字母都大写的形式的 fileName                           
-  `MODULE_NAME`        |  `string`                 |                 |  所有字母都大写，中间以下划线连接的 fileName                 
-  `module_name`        |  `string`                 |                 |  所有字母都小写，中间以下划线连接的 fileName                 
+  `rootPath`           |  `string`                 |                 |  项目根目录的绝对路径
+  `npmPath`            |  `string`                 |                 |  项目下的 node_modules 目录的绝对路径
+  `date`               |  `string`                 |                 |  当前日期，格式：yyyy-mm-dd
+  `time`               |  `string`                 |                 |  当前时间，格式: hh-mm
+  `datetime`           |  `string`                 |                 |  当前日期和时间，格式：yyyy-mm-dd hh-mm
+  `user`               |  `string`                 |                 |  当前用户，通过读取环境变量中的 USER 字段而获取到的
+  `pkg`                |  `{[key: string]: any}`   |                 |  当前项目的 package.json 所对应的 JSON 对象
+  `filePath`           |  `string`                 |                 |  当前文件的绝对路径
+  `relativeFilePath`   |  `string`                 |                 |  当前文件相对于根目录的路径
+  `fileName`           |  `string`                 |                 |  当前文件的名称，不带路径和后缀
+  `fileExt`            |  `string`                 |                 |  当前文件的后缀名
+  `dirPath`            |  `string`                 |                 |  当前文件所在的目录的绝对路径
+  `dirName`            |  `string`                 |                 |  当前文件所在的目录的名称
+  `rawModuleName`      |  `string`                 |                 |  fileName 的别名，即当前文件的名称（不含后缀）
+  `moduleName`         |  `string`                 |                 |  驼峰形式的 fileName
+  `ModuleName`         |  `string`                 |                 |  单词首字母都大写的形式的 fileName
+  `MODULE_NAME`        |  `string`                 |                 |  所有字母都大写，中间以下划线连接的 fileName
+  `module_name`        |  `string`                 |                 |  所有字母都小写，中间以下划线连接的 fileName
   `ref`                |  `IData`                  |  Yes            |创建 related 文件时，原文件的 IData 对象；或者创建文件夹模板内的文件时，文件夹的 IData 对象
 <!--# INJECT_END #-->
 

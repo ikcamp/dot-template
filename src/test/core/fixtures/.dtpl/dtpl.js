@@ -1,6 +1,4 @@
-import * as _ from '../../../../common/interface'
-
-export default function(source: _.Source): _.IDtplConfig {
+module.exports = function(source) {
   return {
     templates: [
       {

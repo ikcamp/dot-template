@@ -1,6 +1,4 @@
-import {Source, IDtplConfig} from '../../../../common/interface'
-
-export default function (source: Source): IDtplConfig {
+module.exports = function (source) {
   let EOL = '\n'
   let newline = 'newline' + EOL
 

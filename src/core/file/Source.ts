@@ -3,7 +3,7 @@ import * as minimatch from 'minimatch'
 import * as fs from 'fs-extra'
 import {Template} from './Template'
 import {Application} from '../Application'
-import {enableRequireTsFile, IBasicData, IData, IDtplConfig, IUserTemplate, data} from '../common'
+import {IBasicData, IData, IDtplConfig, IUserTemplate, data} from '../common'
 
 export class Source {
   private _basicData: IBasicData
@@ -147,7 +147,16 @@ export class Source {
     }
     this._configFileMtime[configFile] = mtime
 
-    if (configFile.endsWith('.ts')) enableRequireTsFile()
+    if (configFile.endsWith('.ts')) {
+      let tsnode = path.join(this.app.rootPath, 'node_modules', 'ts-node')
+      let tsc = path.join(this.app.rootPath, 'node_modules', 'typescript')
+      if (fs.existsSync(tsnode) && fs.existsSync(tsc)) {
+        require(path.join(tsnode, 'register'))
+      } else {
+        this.app.error(this.app.format(`配置文件 %f 使用了 ts 后缀，但本地没有安装 ts-node 和 typescript，无法编译`, configFile))
+        return
+      }
+    }
     let mod: any = require(configFile)
     let config: IDtplConfig | undefined
     if (mod) {
