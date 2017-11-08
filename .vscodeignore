@@ -17,3 +17,7 @@ coverage/**
 .travis.yml
 appveyor.yml
 res/doc-images/**
+
+out/bin*
+out/apps/cli/**
+out/adapter/CliEditor*
