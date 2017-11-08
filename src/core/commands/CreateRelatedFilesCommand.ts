@@ -51,7 +51,7 @@ export class CreateRelatedFilesCommand extends Command {
       this.relatedSources = rs
     } else {
       this.invalid = true
-      this.app.error(this.app.format('没有找到任何 %f 的关联文件', textFile))
+      this.app.error(this.app.format('没有需要创建的 %f 的关联文件', textFile))
     }
   }
 
