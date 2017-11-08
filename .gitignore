@@ -5,3 +5,5 @@ node_modules
 coverage/
 .nyc_output/
 .DS_Store
+dtpl.debug.log
+dtpl.error.log

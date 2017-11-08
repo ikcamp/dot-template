@@ -11,7 +11,6 @@ import {getIgnoredPatterns} from './common'
 export class Application {
   private event: Events
   private cmder: Commander
-  private ignoredMatcher: minimatch.IMinimatch[]
 
   public render: Render
   public rootPath: string
@@ -51,14 +50,17 @@ export class Application {
     }
 
     let isRunning = false
-    this.ignoredMatcher = [...getIgnoredPatterns(this.rootPath), 'node_modules/**', '.git/**', '.vscode/**']
-      .map(pattern => new minimatch.Minimatch(pattern))
+    let includeMatcher = new minimatch.Minimatch(this.editor.configuration.watchFilesGolbPattern, {dot: true})
+    let ignoredMatcher = [...getIgnoredPatterns(this.rootPath), 'node_modules/**', '.git/**', '.vscode/**']
+                          .map(pattern => new minimatch.Minimatch(pattern, {dot: true}))
 
-    this.event.on('newFile', (filePath: string) => {
+
+      this.event.on('newFile', (filePath: string) => {
       // 执行命令时会创建新文件，会被检测到，要忽略它
       if (isRunning && this.cmder.fileMaybeCreatedByCommand()) return
-      if (this.ignoredMatcher.some(matcher => matcher.match(path.relative(this.rootPath, filePath)))) {
-        return // 不监听 ignored 的文件
+      let relativePath = path.relative(this.rootPath, filePath)
+      if (!includeMatcher.match(relativePath) || ignoredMatcher.some(matcher => matcher.match(relativePath))) {
+        return
       }
 
       if (sid) clearTimeout(sid)

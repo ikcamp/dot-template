@@ -23,3 +23,20 @@
 
 
 官方示例大全 https://github.com/Microsoft/vscode-extension-samples
+
+## 发布代码步骤
+
+```bash
+
+git checkout master
+npm version patch/minor/major
+
+git checkout vscode
+git merge master
+vsce publish
+
+git checkkout npm
+git merge master
+npm publish
+
+```

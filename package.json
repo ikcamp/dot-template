@@ -78,7 +78,7 @@
         "dot-template.watchFilesGolbPattern": {
           "type": "string",
           "default": "**/*",
-          "description": "指定要监听的文件，详情参考 https://code.visualstudio.com/docs/extensionAPI/vscode-api#GlobPattern"
+          "description": "指定要监听的文件，使用了 minimatch 匹配，并开启了 dot=true，其它选项默认"
         },
         "dot-template.commandInvalidTimeout": {
           "type": "number",

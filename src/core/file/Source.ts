@@ -144,7 +144,7 @@ export class Source {
       let tsnode = path.join(this.app.rootPath, 'node_modules', 'ts-node')
       let tsc = path.join(this.app.rootPath, 'node_modules', 'typescript')
       if (fs.existsSync(tsnode) && fs.existsSync(tsc)) {
-        requireFile(path.join(tsnode, 'register'))
+        require(path.join(tsnode, 'register')) // 不需要用 requireFile
       } else {
         this.app.error(this.app.format(`配置文件 %f 使用了 ts 后缀，但本地没有安装 ts-node 和 typescript，无法编译`, configFile))
         return
