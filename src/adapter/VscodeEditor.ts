@@ -15,10 +15,10 @@ export class VscodeEditor extends Editor {
 
   constructor() {
     super(vscode.workspace.rootPath || process.cwd())
-    this.fileSystemWatcher = vscode.workspace.createFileSystemWatcher('**/*', false, true, true)
-    this.fileSystemWatcher.onDidCreate(uri => this.app.emitNewFile(uri.fsPath))
     this.setConfiguration()
     this.configListener = vscode.workspace.onDidChangeConfiguration(this.setConfiguration.bind(this))
+    this.fileSystemWatcher = vscode.workspace.createFileSystemWatcher(this.configuration.watchFilesGolbPattern, false, true, true)
+    this.fileSystemWatcher.onDidCreate(uri => this.app.emitNewFile(uri.fsPath))
   }
 
   private setConfiguration() {
@@ -26,7 +26,9 @@ export class VscodeEditor extends Editor {
     this.EOL = vscode.workspace.getConfiguration('files').get('eol', os.EOL)
 
     this.configuration = {
-      debug: false,
+      debug: c.get('debug', false),
+      noExampleWhenCreateDtplFolder: c.get('noExampleWhenCreateDtplFolder', false),
+      watchFilesGolbPattern: c.get('watchFilesGolbPattern', '**/*'),
       commandInvalidTimeout: c.get('commandInvalidTimeout', 60000),
       dtplFolderName: c.get('dtplFolderName', '.dtpl'),
       minimatchOptions: c.get('minimatchOptions') || {matchBase: true, nocomment: true, dot: true},
@@ -138,7 +140,12 @@ export class VscodeEditor extends Editor {
   }
 
   debug(message: string) {
-    if (this.configuration.debug) console.log('[dot-template] ' + message)
+    if (this.configuration.debug) {
+      console.log('[dot-template] ' + message)
+      let debugFile = path.join(this.rootPath, 'dtpl.debug.log')
+      fs.ensureFileSync(debugFile)
+      fs.writeFile(debugFile, message + this.EOL, {flag: 'a'})
+    }
   }
   warning(message: string) {
     vscode.window.showWarningMessage(`[dot-template] ${message}`)
@@ -149,8 +156,13 @@ export class VscodeEditor extends Editor {
   error(message: string, e?: Error | any) {
     let hasError = !!e
     message = message.split(/\r?\n/)[0] // 取第一行
-    vscode.window.showErrorMessage(`[dot-template] ${message}`)
-    if (hasError) console.error(e)
+    vscode.window.showErrorMessage(`[dot-template] ${message} ${hasError ? '(详情请查看根目录下 dtpl.error.log 文件)' : ''}`)
+    if (hasError) {
+      console.error(e)
+      let errorFile = path.join(this.rootPath, 'dtpl.error.log')
+      fs.ensureFileSync(errorFile)
+      fs.writeFile(errorFile, e.stack || JSON.stringify(e))
+    }
   }
 }
 

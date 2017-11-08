@@ -1,4 +1,5 @@
 import * as path from 'path'
+import * as fs from 'fs-extra'
 
 /**
  * 按先后顺序一个个用 run 函数来运行 tasks 中的字段
@@ -78,4 +79,37 @@ export function findJsRelatedFiles(jsfile: string, fileContent: string): string[
   fileContent.replace(requireRegExp, (raw, from) => add(from))
 
   return result
+}
+
+const fileMTimeCache: {[key: string]: number} = {}
+export function requireFile(file: string): any {
+  let mtime = fs.statSync(file).mtime.getTime()
+  if (!fileMTimeCache[file] || fileMTimeCache[file] !== mtime) {
+    delete require.cache[require.resolve(file)]
+  }
+  fileMTimeCache[file] = mtime
+  return require(file)
+}
+
+
+let ignoreFileMTime = 0
+let ignoredPatterns: string[] = []
+
+export function getIgnoredPatterns(rootPath: string): string[] {
+  let file = path.join(rootPath, '.gitignore')
+  let mtime: number
+
+  try {
+    mtime = fs.statSync(file).mtime.getTime()
+  } catch (e) { return [] }
+
+  if (!ignoreFileMTime || ignoreFileMTime !== mtime) {
+    ignoredPatterns = fs.readFileSync(file).toString()
+      .split(/\r?\n/)
+      .map(l => l.trim())
+      .filter(l => l && l[0] !== '#')
+      .map(l => l.endsWith('/') ? l + '**' : l)
+  }
+  ignoreFileMTime = mtime
+  return ignoredPatterns
 }

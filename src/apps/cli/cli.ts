@@ -116,12 +116,13 @@ export function watch(topRes: any) {
     version: false
   }).options({
     ...commonOpts,
-    'a | auto':     '<boolean> 自动监听 rootPath 中文件的变化'
+    'w | watchFileGlobs':    '<array> 指定要监听的文件，没有指定则会监听根目录'
   }).parse(topRes._, function(r) {
     let opt: IWatcherOptions = {
       rootPath: path.resolve(r.rootPath || process.cwd()),
+      watch: true,
       debug: !!r.debug,
-      watchRootPath: !!r.auto
+      watchGlobPatterns: r.watchFileGlobs ? r.watchFileGlobs : []
     }
     if (r.socket) opt.socketFile = path.resolve(r.socket)
     new Watcher(opt).listen()

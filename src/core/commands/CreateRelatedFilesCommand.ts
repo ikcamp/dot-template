@@ -93,7 +93,11 @@ export class CreateRelatedFilesCommand extends Command {
 
       await this.createFileAsync(r.filePath, '')
       let tpl = app.createSource(r.filePath).match(false)
-      if (tpl) await this.setFileContentAsync(r.filePath, render.renderFile(tpl.filePath, tpl.data), '')
+      if (tpl) {
+        let data = tpl.data
+        data.ref = this.source.basicData
+        await this.setFileContentAsync(r.filePath, render.renderFile(tpl.filePath, data), '')
+      }
 
       // 注入引用
       let {reference, begin, end, smartInsertStyle} = r

@@ -16,11 +16,12 @@ __* 查看此文档需要结合同目录下的 dtpl.ts 文件一起阅读，dtpl
 ### 1. 在项目根目录上创建一个 `my-example` 文件夹试试
 
 你会发现 my-example 目录下又多了一大批文件，而且最外层
-目录上也多了三个文件：
+目录上也多了几个文件：
 
 - package.json
 - tsconfig.json
 - webpack.config.js
+- .gitignore
 
 *如果项目中之前就有这些文件，那么原文件会被放到 .backup 目录内*
 

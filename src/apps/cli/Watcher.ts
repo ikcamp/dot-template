@@ -10,7 +10,8 @@ export interface IWatcherOptions {
   socketFile?: string
   debug?: boolean
   rootPath?: string
-  watchRootPath?: boolean
+  watch?: boolean
+  watchGlobPatterns?: string[]
 }
 
 
@@ -31,7 +32,8 @@ export class Watcher extends DtplAgent {
     let {
       socketFile = config.socketFile,
       rootPath = process.cwd(),
-      watchRootPath = false,
+      watch = false,
+      watchGlobPatterns = [],
       debug = false
     } = options
     this.socketFile = socketFile
@@ -47,7 +49,9 @@ export class Watcher extends DtplAgent {
       this.destroy()
     })
 
-    if (watchRootPath) this.watchDir(rootPath)
+    if (watch) {
+      this.watchDir(watchGlobPatterns.length ? watchGlobPatterns : rootPath)
+    }
 
     process.on('SIGINT', () => {
       info('Watcher SIGINT')
@@ -55,12 +59,13 @@ export class Watcher extends DtplAgent {
     })
   }
 
-  watchDir(dir: string) {
+  watchDir(dir: string | string[]) {
     let emit = (filepath: string) => {
       if (typeof filepath === 'string') this.dtpl.emitNewFile(filepath)
     }
+
     this.fswatcher = chokidar.watch(dir, {
-      ignored: '**/node_modules/**',
+      ignored: ['**/node_modules/**', '**/.git/**'],
       ignoreInitial: true
     }).on('add', emit).on('addDir', emit)
   }

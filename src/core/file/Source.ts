@@ -3,11 +3,10 @@ import * as minimatch from 'minimatch'
 import * as fs from 'fs-extra'
 import {Template} from './Template'
 import {Application} from '../Application'
-import {IBasicData, IData, IDtplConfig, IUserTemplate, data} from '../common'
+import {IBasicData, IData, IDtplConfig, IUserTemplate, data, requireFile} from '../common'
 
 export class Source {
   private _basicData: IBasicData
-  private _configFileMtime: {[key: string]: number} = {}
 
   relativeFilePath: string
   exists: boolean
@@ -141,23 +140,17 @@ export class Source {
    * 加载配置文件，每次都重新加载，确保无缓存
    */
   private loadDtplConfig(configFile: string): IDtplConfig | undefined {
-    let mtime = fs.statSync(configFile).mtime.getTime()
-    if (!this._configFileMtime[configFile] || this._configFileMtime[configFile] !== mtime) {
-      delete require.cache[require.resolve(configFile)]
-    }
-    this._configFileMtime[configFile] = mtime
-
     if (configFile.endsWith('.ts')) {
       let tsnode = path.join(this.app.rootPath, 'node_modules', 'ts-node')
       let tsc = path.join(this.app.rootPath, 'node_modules', 'typescript')
       if (fs.existsSync(tsnode) && fs.existsSync(tsc)) {
-        require(path.join(tsnode, 'register'))
+        requireFile(path.join(tsnode, 'register'))
       } else {
         this.app.error(this.app.format(`配置文件 %f 使用了 ts 后缀，但本地没有安装 ts-node 和 typescript，无法编译`, configFile))
         return
       }
     }
-    let mod: any = require(configFile)
+    let mod: any = requireFile(configFile)
     let config: IDtplConfig | undefined
     if (mod) {
       let fn = mod.default ? mod.default : mod

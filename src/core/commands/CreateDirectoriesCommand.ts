@@ -50,6 +50,7 @@ export class CreateDirectoriesCommand extends Command {
       this.exists.push(exists)
 
       await walk(fromDir, async (rawName: string, fromPath: string, stats: fs.Stats) => {
+
         let relativePath = path.relative(fromDir, fromPath)
 
         let sourceData = tpl.data
@@ -61,12 +62,10 @@ export class CreateDirectoriesCommand extends Command {
         let rawContent = ''
         let content = ''
 
-        if (stats.isFile()) {
-          rawContent = editor.getFileContent(fromPath)
-          let renderData = app.createSource(toPath).basicData
-          renderData.ref = sourceData
-          content = render.renderContent(rawContent, renderData, render.judgeEngineByFileExtension(fromPath))
-        }
+        rawContent = editor.getFileContent(fromPath)
+        let renderData = app.createSource(toPath).basicData
+        renderData.ref = sourceData
+        content = render.renderContent(rawContent, renderData, render.judgeEngineByFileExtension(fromPath))
 
         let filterResult = tpl.filter({fromDir, toDir, fromPath, toPath, rawContent, rawName, name, relativePath, stats, content})
 
@@ -85,17 +84,15 @@ export class CreateDirectoriesCommand extends Command {
           return false
         }
 
-        if (stats.isFile()) {
-          // 备份已经存在的文件
-          if (!tpl.custom.overwrite && fs.existsSync(toPath)) {
-            let backupDir = path.resolve(toPath, '..', '.backup')
-            fs.mkdirpSync(backupDir)
-            fs.renameSync(toPath, path.join(backupDir, path.basename(toPath)))
-          }
-          await this.createFileAsync(toPath, content)
-          copiedFiles.push(toPath)
-          this.debug('复制文件 %f => %f', fromPath, toPath)
+        // 备份已经存在的文件
+        if (!tpl.custom.overwrite && fs.existsSync(toPath)) {
+          let backupDir = path.resolve(toPath, '..', '.backup')
+          fs.mkdirpSync(backupDir)
+          fs.renameSync(toPath, path.join(backupDir, path.basename(toPath)))
         }
+        await this.createFileAsync(toPath, content)
+        copiedFiles.push(toPath)
+        this.debug('复制文件 %f => %f', fromPath, toPath)
 
         return true
       })
@@ -138,7 +135,10 @@ async function walk(dir: string, fn: (name: string, filePath: string, stats: fs.
   for (let name of names) {
     filePath = path.join(dir, name)
     stats = fs.statSync(filePath)
-    if (true === await fn(name, filePath, stats) && stats.isDirectory()) {
+
+    if (stats.isFile()) {
+      await fn(name, filePath, stats)
+    } else if (stats.isDirectory()) {
       await walk(filePath, fn)
     }
   }

@@ -1,18 +1,22 @@
 import * as Events from 'mora-scripts/libs/lang/Events'
 import * as fs from 'fs-extra'
 import * as path from 'path'
+import * as minimatch from 'minimatch'
 import {Editor} from './Editor'
 import {Commander} from './Commander'
 import {Render} from './Render'
 import {Source} from './file/'
+import {getIgnoredPatterns} from './common'
 
 export class Application {
   private event: Events
   private cmder: Commander
+  private ignoredMatcher: minimatch.IMinimatch[]
 
   public render: Render
   public rootPath: string
   public dotTemplateRootPath: string = path.resolve(__dirname, '..', '..')
+
 
   constructor(public editor: Editor) {
     this.event = new Events()
@@ -47,9 +51,15 @@ export class Application {
     }
 
     let isRunning = false
+    this.ignoredMatcher = [...getIgnoredPatterns(this.rootPath), 'node_modules/**', '.git/**', '.vscode/**']
+      .map(pattern => new minimatch.Minimatch(pattern))
+
     this.event.on('newFile', (filePath: string) => {
       // 执行命令时会创建新文件，会被检测到，要忽略它
       if (isRunning && this.cmder.fileMaybeCreatedByCommand()) return
+      if (this.ignoredMatcher.some(matcher => matcher.match(path.relative(this.rootPath, filePath)))) {
+        return // 不监听 ignored 的文件
+      }
 
       if (sid) clearTimeout(sid)
       if (newFiles.indexOf(filePath) < 0) {
@@ -78,7 +88,8 @@ export class Application {
     if (result) {
       let folder = folders.find(f => path.basename(f) === this.editor.configuration.dtplFolderName)
       if (folder) {
-        this.info('恭喜，成功创建 dot-template 配置文件夹 %f，快去该目录下查看 readme.md 文件吧', folder)
+        let tip = this.editor.configuration.noExampleWhenCreateDtplFolder ? '' : '，快去该目录下查看 readme.md 文件吧'
+        this.info('恭喜，成功创建 dot-template 配置文件夹 %f' + tip, folder)
       }
     }
     return result

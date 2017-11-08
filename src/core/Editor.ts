@@ -9,6 +9,8 @@ import {Application} from './Application'
 
 export interface IConfiguration {
   debug: boolean
+  noExampleWhenCreateDtplFolder: boolean
+  watchFilesGolbPattern: string
   commandInvalidTimeout: number
   dtplFolderName: string
   minimatchOptions: IMinimatchOptions
@@ -24,6 +26,8 @@ export abstract class Editor {
   EOL: string = os.EOL
   configuration: IConfiguration = {
     debug: false,
+    noExampleWhenCreateDtplFolder: false,
+    watchFilesGolbPattern: '**/*',
     commandInvalidTimeout: 60000,
     dtplFolderName: '.dtpl',
     minimatchOptions: {

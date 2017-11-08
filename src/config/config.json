@@ -106,6 +106,21 @@
   },
 
   "options": {
+    "debug": {
+      "type": "boolean",
+      "default": false,
+      "description": "设置是否输出调试信息在项目根目录中的 dtpl.debug.log 文件中"
+    },
+    "noExampleWhenCreateDtplFolder": {
+      "type": "boolean",
+      "default": false,
+      "description": "新建 .dtpl 文件夹时不要创建演示用的模板"
+    },
+    "watchFilesGolbPattern": {
+      "type": "string",
+      "default": "**/*",
+      "description": "指定要监听的文件，详情参考 https://code.visualstudio.com/docs/extensionAPI/vscode-api#GlobPattern"
+    },
     "commandInvalidTimeout": {
       "type": "number",
       "default": 60000,
