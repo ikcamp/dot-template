@@ -17,3 +17,7 @@ coverage/**
 .travis.yml
 appveyor.yml
 res/doc-images/**
+
+out/vscode*
+out/apps/vscode/**
+out/adapter/VscodeEditor**
