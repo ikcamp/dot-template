@@ -2,10 +2,11 @@
   "name": "dot-template",
   "displayName": "Dot Template",
   "description": "create new files according to pre-defined templates",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "publisher": "qiu8310",
   "scripts": {
     "clear": "rm -rf out",
+    "prepublish": "npm run build",
     "vscode:prepublish": "npm run build",
     "build": "npm run clear && tsc -p ./ && chmod a+x out/bin.js",
     "watch": "tsc -watch -p ./",
