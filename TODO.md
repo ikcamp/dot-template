@@ -29,6 +29,8 @@
 ```bash
 
 git checkout master
+
+npm test
 npm version patch/minor/major
 
 git checkout vscode
