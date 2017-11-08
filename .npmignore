@@ -18,6 +18,9 @@ coverage/**
 appveyor.yml
 res/doc-images/**
 
+res/images/**
+res/syntaxes/**
+res/language-configuration.json
 out/vscode*
 out/apps/vscode/**
 out/adapter/VscodeEditor**
