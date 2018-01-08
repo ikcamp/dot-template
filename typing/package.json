@@ -1,0 +1,23 @@
+{
+  "name": "types-dot-template",
+  "displayName": "Dot Template",
+  "description": "create new files according to pre-defined templates",
+  "version": "0.2.2",
+  "publisher": "qiu8310",
+  "typings": "common/interface.d.ts",
+  "keywords": [
+    "template",
+    "file",
+    "variable"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qiu8310/dot-template"
+  },
+  "devDependencies": {
+
+  },
+  "dependencies": {
+    "@types/fs-extra": "~4.0.2"
+  }
+}
