@@ -6,9 +6,9 @@
   "publisher": "qiu8310",
   "scripts": {
     "clear": "rm -rf out",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "vscode:prepublish": "npm run build",
-    "build": "npm run clear && tsc -p ./ && chmod a+x out/bin.js",
+    "build": "npm run clear && tsc -p ./ && chmod a+x out/bin.js && node typing/init.js",
     "watch": "tsc -watch -p ./",
     "vscode:postinstall": "node ./node_modules/vscode/bin/install",
     "test": "nyc _mocha -R dot src/test/core/test*",

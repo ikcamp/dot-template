@@ -1,5 +1,6 @@
 .vscode/**
 .vscode-test/**
+typing/**
 out/test/**
 out/**/*.map
 src/**
