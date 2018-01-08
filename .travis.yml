@@ -18,6 +18,10 @@ node_js:
   - "7"
   - "6"
 
+branches:
+  only:
+  - master
+
 notifications:
   email:
     - qiuzhongleiabc@126.com
