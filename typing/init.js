@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra'
-import * as path from 'path'
+const fs = require('fs-extra')
+const path = require('path')
 
 const outDir = path.resolve(__dirname, '../out')
 const typingDir = path.resolve(__dirname)
