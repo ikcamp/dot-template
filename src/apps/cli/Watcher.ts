@@ -16,14 +16,23 @@ export interface IWatcherOptions {
 
 
 export class Watcher extends DtplAgent {
-  server: net.Server
+  server: net.Server | null
   private socketFile: string
   private parser: Parser
-  private fswatcher: chokidar.FSWatcher
+  private fswatcher: chokidar.FSWatcher | null
 
   destroy = () => {
-    if (fs.existsSync(this.socketFile)) fs.unlinkSync(this.socketFile)
-    if (this.fswatcher) this.fswatcher.close()
+    if (fs.existsSync(this.socketFile)) {
+      fs.unlinkSync(this.socketFile)
+    }
+    if (this.fswatcher) {
+      this.fswatcher.close()
+      this.fswatcher = null
+    }
+    if (this.server) {
+      this.server.close()
+      this.server = null
+    }
   }
 
   constructor(options: IWatcherOptions = {}) {
@@ -44,19 +53,13 @@ export class Watcher extends DtplAgent {
 
     this.server = net.createServer(this.handleConnection.bind(this))
     this.server.on('error', error)
-    this.server.on('close', () => {
-      info('Watcher closed')
-      this.destroy()
-    })
 
     if (watch) {
       this.watchDir(watchGlobPatterns.length ? watchGlobPatterns : rootPath)
     }
-
-    process.on('SIGINT', () => {
-      info('Watcher SIGINT')
-      this.destroy()
-    })
+    process.on('exit', this.destroy)
+    process.on('SIGINT', this.destroy)
+    process.on('SIGHUP', this.destroy)
   }
 
   watchDir(dir: string | string[]) {
@@ -96,9 +99,13 @@ export class Watcher extends DtplAgent {
       throw new Error(`Socket file ${socketFile} already exists`)
     }
 
-    this.server.listen(socketFile, () => {
-      if (callback) callback()
-      info(`Watcher listen on ${socketFile}`)
-    })
+    if (this.server) {
+      this.server.listen(socketFile, () => {
+        if (callback) callback()
+        info(`Watcher listen on ${socketFile}`)
+      })
+    } else {
+      throw new Error('Already destroied!')
+    }
   }
 }

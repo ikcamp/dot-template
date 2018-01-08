@@ -2,7 +2,15 @@
 * [x] 监听 dtpl.ts 文件，文件为空时可以注入一个简化版本的 dtpl.ts
 * [x] 自动过滤 .gitignore 中的文件（处理文件夹还不太完美，需要根据后面有没 / 来判断是否是文件夹，另外还不支持 ! 符号）
 
+* 改善 example
+
 * related 文件支持 inject 一些信息到原文件上，inject 支持 append
+
+* 自动更新 dtpl.ts 配置文件中的 interface 路径（或者发布一个 interface 包？）
+
+    ```
+    import * as _ from '/Users/Mora/.vscode/extensions/qiu8310.dot-template-0.2.1/out/common/interface'
+    ```
 
 
 * 打开（最好以预览的方式打开） .dtpl 目录下的 readme 文件（和下面的这条只要有一个存在就好）
@@ -29,6 +37,8 @@
 ```bash
 
 git checkout master
+
+npm test
 npm version patch/minor/major
 
 git checkout vscode
