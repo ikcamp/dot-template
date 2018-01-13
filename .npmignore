@@ -20,6 +20,7 @@ appveyor.yml
 res/doc-images/**
 
 res/images/**
+res/snippets/**
 res/syntaxes/**
 res/language-configuration.json
 out/vscode*
