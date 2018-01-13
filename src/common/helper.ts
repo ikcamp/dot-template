@@ -113,3 +113,8 @@ export function getIgnoredPatterns(rootPath: string): string[] {
   ignoreFileMTime = mtime
   return ignoredPatterns
 }
+
+export function toArray<T>(item: undefined | T | T[]): T[] {
+  if (!item) return []
+  return Array.isArray(item) ? item : [item]
+}

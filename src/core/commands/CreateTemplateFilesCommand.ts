@@ -2,6 +2,7 @@ import {Command, ICommandInitOptions} from './Command'
 import {Application} from '../Application'
 import {series} from '../common'
 import * as fs from 'fs-extra'
+import * as inject from 'mora-scripts/libs/fs/inject'
 
 /**
  * 创建文件并注入模板的命令
@@ -51,6 +52,17 @@ export class CreateTemplateFilesCommand extends Command {
       let content: string = ''
       let newContent = tpl ? render.renderFile(tpl.filePath, tpl.data) : ''
       if (tpl) this.debug(`渲染文件 %f`, tpl.filePath)
+
+      // 注入内容到其它文件中
+      if (tpl) {
+        await series(tpl.getInjects(), async ({data, file, tags = 'loose'}) => {
+          if (fs.existsSync(file)) {
+            let c = inject(file, data, {tags, returnContent: true}) as string
+            await editor.setFileContentAsync(file, c)
+          }
+        })
+      }
+
       let exists = fs.existsSync(file)
 
       if (exists) {

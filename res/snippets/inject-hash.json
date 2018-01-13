@@ -1,0 +1,7 @@
+{
+  "inject": {
+    "prefix": "inject",
+    "body": "## INJECT_START ${1:key} ##\n## INJECT_END ##",
+    "description": "the tags of using mora-script to inject content"
+  }
+}
