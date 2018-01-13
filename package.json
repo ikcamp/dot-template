@@ -2,7 +2,7 @@
   "name": "dot-template",
   "displayName": "Dot Template",
   "description": "create new files according to pre-defined templates",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "publisher": "qiu8310",
   "scripts": {
     "clear": "rm -rf out",
