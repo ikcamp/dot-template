@@ -1,7 +1,9 @@
 import {Application} from '../Application'
+import {Template} from '../file/Template'
 import * as fs from 'fs-extra'
 import * as path from 'path'
-import {unique} from '../common'
+import {unique, series} from '../common'
+import * as inject from 'mora-scripts/libs/fs/inject'
 
 export interface ICommandInitOptions {
   /**
@@ -82,6 +84,16 @@ export abstract class Command {
       })
 
     return unique(filePaths)
+  }
+
+  protected async inject(tpl: Template) {
+    await series(tpl.getInjects(), async ({data, file, tags = 'loose'}) => {
+      this.app.debug('inject %f', file)
+      if (fs.existsSync(file)) {
+        let c = inject(file, data, {tags, returnContent: true}) as string
+        await this.app.editor.setFileContentAsync(file, c)
+      }
+    })
   }
 
   protected async createFileAsync(file: string, content: string) {

@@ -97,6 +97,9 @@ export class CreateDirectoriesCommand extends Command {
         return true
       })
       tpl.afterFilter(fromDir, toDir, copiedFiles)
+
+      await this.inject(tpl)
+
       this.debug('目录复制完成')
     })
 
