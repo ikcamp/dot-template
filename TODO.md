@@ -40,8 +40,14 @@
 
 git checkout master
 
+npm run build
 npm test
 npm version patch/minor/major
+
+cd typing
+# 修改 package.json 的版本号
+npm publish
+cd ..
 
 git checkout vscode
 git merge master
