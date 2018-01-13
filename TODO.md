@@ -4,15 +4,17 @@
 
 * 改善 example
 
-* related 文件支持 inject 一些信息到原文件上，inject 支持 append
-
-* 自动更新 dtpl.ts 配置文件中的 interface 路径（或者发布一个 interface 包？）
+* [x] related 文件支持 inject 一些信息到原文件上，inject 支持 append
+* [x] 自动更新 dtpl.ts 配置文件中的 interface 路径（或者发布一个 interface 包？）
 
     ```
     import * as _ from '/Users/Mora/.vscode/extensions/qiu8310.dot-template-0.2.1/out/common/interface'
     ```
 
+    **采用了 types-dot-template 包的形式**
 
+
+* 完善 命令的前进后退机制 (DO & UNDO)
 * 打开（最好以预览的方式打开） .dtpl 目录下的 readme 文件（和下面的这条只要有一个存在就好）
 * 新建完目录时，最好展开它
 

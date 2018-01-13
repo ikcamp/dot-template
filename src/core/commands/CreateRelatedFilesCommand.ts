@@ -43,12 +43,20 @@ export class CreateRelatedFilesCommand extends Command {
           let filePath = path.resolve(p[0] === '.' ? path.dirname(source.filePath) : rootPath, p)
           return {...r, filePath}
         })
-      rs = rs.filter(r => r.filePath && r.filePath.indexOf(rootPath) === 0 && !fs.existsSync(r.filePath)) // 确保关联的文件不存在并且要在项目中
+      rs = rs.filter(r => r.filePath && r.filePath.indexOf(rootPath) === 0) // 确保关联的文件不存在并且要在项目中
     }
 
     rs = unique(rs, 'filePath')
     if (rs.length) {
-      this.relatedSources = rs
+      let notExistsRs = rs.filter(r => !fs.existsSync(r.filePath))
+      this.relatedSources = notExistsRs
+      if (!notExistsRs.length) {
+        rs.forEach(r => {
+          if (fs.existsSync(r.filePath)) {
+            this.app.editor.openFileAsync(r.filePath)
+          }
+        })
+      }
     } else {
       this.invalid = true
       this.app.error(this.app.format('没有需要创建的 %f 的关联文件', textFile))

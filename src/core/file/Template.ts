@@ -1,4 +1,4 @@
-import {ICopySource, ICopyFilterResult, ICopiedFiles, IUserTemplate, IData, IRelated} from '../common'
+import {ICopySource, ICopyFilterResult, ICopiedFiles, IUserTemplate, IData, IRelated, IInject, toArray} from '../common'
 import {Source} from './Source'
 import {Application} from '../Application'
 
@@ -26,13 +26,17 @@ export class Template {
   }
 
   getRelatedSources(): IRelated[] {
-    let {custom} = this
-    let {related} = custom
+    let {related} = this.custom
     if (typeof related === 'function') {
-      let rs = this.app.runUserFunction('template.related', related, [this.data, this.source.fileContent])
-      if (rs) {
-        return Array.isArray(rs) ? rs : [rs]
-      }
+      return toArray(this.app.runUserFunction('template.related', related, [this.data, this.source.fileContent]))
+    }
+    return []
+  }
+
+  getInjects(): IInject[] {
+    let {inject} = this.custom
+    if (typeof inject === 'function') {
+      return toArray(this.app.runUserFunction('template.inject', inject, [this.data, this.source.fileContent]))
     }
     return []
   }

@@ -2,7 +2,7 @@
   "name": "dot-template",
   "displayName": "Dot Template",
   "description": "create new files according to pre-defined templates",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "publisher": "qiu8310",
   "scripts": {
     "clear": "rm -rf out",
@@ -204,6 +204,52 @@
         "language": "dtpl",
         "scopeName": "source.dtpl",
         "path": "./res/syntaxes/dtpl.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "path": "./res/snippets/inject-docs.json",
+        "language": "javascript"
+      },
+      {
+        "path": "./res/snippets/inject-docs.json",
+        "language": "typescript"
+      },
+      {
+        "path": "./res/snippets/inject-docs.json",
+        "language": "javascriptreact"
+      },
+      {
+        "path": "./res/snippets/inject-docs.json",
+        "language": "typescriptreact"
+      },
+      {
+        "path": "./res/snippets/inject-docs.json",
+        "language": "css"
+      },
+      {
+        "path": "./res/snippets/inject-docs.json",
+        "language": "sass"
+      },
+      {
+        "path": "./res/snippets/inject-docs.json",
+        "language": "json"
+      },
+      {
+        "path": "./res/snippets/inject-hash.json",
+        "language": "gitignore"
+      },
+      {
+        "path": "./res/snippets/inject-hash.json",
+        "language": "shellscript"
+      },
+      {
+        "path": "./res/snippets/inject-html.json",
+        "language": "html"
+      },
+      {
+        "path": "./res/snippets/inject-html.json",
+        "language": "markdown"
       }
     ]
   },

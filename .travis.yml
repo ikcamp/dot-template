@@ -2,10 +2,9 @@ language: node_js
 env: CI=true
 sudo: false
 
-install: npm install
-before_script:
-  - npm run vscode:postinstall
-  - npm run build
+install: npm install && npm run vscode:postinstall
+
+before_script: npm run build
 
 script: npm test
 

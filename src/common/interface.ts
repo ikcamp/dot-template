@@ -138,6 +138,23 @@ export interface IRelated {
   smartInsertStyle?: boolean
 }
 
+export interface IInject {
+  /**
+   * 要注入的文件
+   */
+  file: string
+
+  /**
+   * 要注入的内容
+   */
+  data: {[key: string]: any}
+
+  /**
+   * 注入标识，默认会自动根据后缀名来判断（但并不能识别所有的后缀）
+   */
+  tags?: 'loose' | 'hash' | 'docs' | 'html' | string[]
+}
+
 export interface IDtplConfig {
   templates: IUserTemplate[]
   globalData?: IObject
@@ -202,6 +219,11 @@ export interface IUserTemplate {
    *
    */
   related?: (data: IData, fileContent: string) => IRelated | IRelated[]
+
+  /**
+   * 使用 mora-scripts/libs/fs/inject.js 注入内容到其它文件中
+   */
+  inject?: (data: IData, fileContent: string) => IInject | IInject[]
 
   // onRender?: (content: string) => string
 
