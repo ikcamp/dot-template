@@ -1866,8 +1866,8 @@ mocha@^4.0.1, mocha@~4.0.1:
     supports-color "4.4.0"
 
 mora-scripts@~1.6.12:
-  version "1.6.13"
-  resolved "http://registry.npm.taobao.org/mora-scripts/download/mora-scripts-1.6.13.tgz#d0e176e8290b96d071d38e86cc6214e37719d256"
+  version "1.6.17"
+  resolved "http://registry.npm.taobao.org/mora-scripts/download/mora-scripts-1.6.17.tgz#6dcb15640adc12ba9d3ad2c948ec93f0a188b34e"
   dependencies:
     cross-spawn "5.1.0"
     semver-regex "1.0.0"
