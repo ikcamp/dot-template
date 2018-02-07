@@ -1,7 +1,7 @@
 {
   "name": "dot-template",
-  "displayName": "Dot Template",
-  "description": "create new files according to pre-defined templates",
+  "displayName": "Dot Template(Deprecated)",
+  "description": "Deprecated, please use `dot-template-vscode`",
   "version": "0.2.6",
   "publisher": "qiu8310",
   "scripts": {
